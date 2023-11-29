@@ -75,4 +75,20 @@ router.post('/', requireAuth, validateSpotCreate, async (req,res) => {
   res.json(newSpot)
 })
 
+router.delete('/:spotId', requireAuth, async (req,res) => {
+  const { user } = req
+  const { spotId } = req.params
+  const specificSpot = await Spot.findByPk(spotId)
+  if(!specificSpot) {
+    res.status(404)
+    res.json({message: spotNotFound})
+  }
+  if(user.id !== specificSpot.ownerId) {
+    res.status(401)
+    return res.json({ message: "Attempted to delete Spot of another user" })
+  }
+  await specificSpot.destroy()
+  res.json({message: 'Successfully deleted'})
+})
+
 module.exports = router;
