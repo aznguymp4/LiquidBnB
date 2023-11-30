@@ -1,10 +1,24 @@
 'use strict';
 const { Model, Validator } = require('sequelize');
+const exclude = ["hashedPassword", "email", "createdAt", "updatedAt"]
 
 module.exports = (sequelize, DataTypes) => {
 	class User extends Model {
 		static associate(models) {
-			// define association here
+			User.hasMany(
+				models.Spot, {
+					foreignKey: 'ownerId',
+					onDelete: 'CASCADE',
+					hooks: true
+				}
+			)
+	User.hasMany(
+		models.Review, {
+			foreignKey: 'userId',
+				onDelete: 'CASCADE',
+				hooks: true
+		}
+	)
 		}
 	};
 
@@ -57,9 +71,10 @@ module.exports = (sequelize, DataTypes) => {
 			sequelize,
 			modelName: 'User',
 			defaultScope: {
-				attributes: {
-					exclude: ["hashedPassword", "email", "createdAt", "updatedAt"]
-				}
+				attributes: { exclude }
+			},
+			scopes: {
+				noUsername: { attributes: { exclude: [...exclude, "username"] } }
 			}
 		}
 	);

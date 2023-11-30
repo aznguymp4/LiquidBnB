@@ -1,13 +1,16 @@
 const router = require('express').Router();
-const sessionRouter = require('./session.js');
-const usersRouter = require('./users.js');
 const { restoreUser } = require('../../utils/auth.js');
 
 router.use(restoreUser);
 
-router.use('/session', sessionRouter);
-
-router.use('/users', usersRouter);
+[
+	'session',
+	'users',
+	'spots',
+	'spot-images',
+	'reviews',
+	'review-images'
+].map(route => router.use('/'+route, require(`./${route}.js`)))
 
 router.post('/test', (req, res) => {
 	res.json({ requestBody: req.body });

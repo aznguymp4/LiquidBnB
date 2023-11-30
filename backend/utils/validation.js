@@ -20,6 +20,15 @@ const handleValidationErrors = (req, _res, next) => {
 	next();
 };
 
+const createError = (message, status) => {
+	const err = new Error(message)
+	err.title = message
+	err.errors = { message }
+	err.status = status
+	return err
+}
+
 module.exports = {
-	handleValidationErrors
+	handleValidationErrors,
+	createError
 };
