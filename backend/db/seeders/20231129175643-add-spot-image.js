@@ -11,12 +11,12 @@ module.exports = {
     await SpotImage.bulkCreate([
       {
         spotId: 1,
-        url: 'imageUrl1',
+        url: 'https://github.com/appacademy/practice-for-week-07-aa-times-long-practice/blob/main/images/AA_Times_Logo.png?raw=true',
         preview: true
       },
       {
         spotId: 1,
-        url: 'imageUrl2',
+        url: 'https://github.com/appacademy/practice-for-week-07-aa-times-long-practice/blob/main/images/AA_Times_Logo.png',
         preview: false
       }
     ], { validate: true });
@@ -26,7 +26,7 @@ module.exports = {
     options.tableName = 'SpotImages';
     const Op = Sequelize.Op;
     return queryInterface.bulkDelete(options, {
-      url: { [Op.in]: ['imageUrl1','imageUrl2'] }
+      url: { [Op.in]: ['https://github.com/appacademy/practice-for-week-07-aa-times-long-practice/blob/main/images/AA_Times_Logo.png?raw=true','https://github.com/appacademy/practice-for-week-07-aa-times-long-practice/blob/main/images/AA_Times_Logo.png'] }
     }, {});
   }
 };
