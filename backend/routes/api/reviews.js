@@ -18,7 +18,8 @@ router.get('/current', requireAuth, async (req,res) => {
           attributes: { exclude: ['description', 'createdAt', 'updatedAt'] },
           include: SpotImage
         },
-        ReviewImage ]
+        ReviewImage
+      ]
     })).map(review => {
       let r = review.toJSON()
       const firstPreview = r.Spot.SpotImages.filter(i=>i.preview)[0]
