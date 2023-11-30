@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Review, ReviewImage } = require('../../db/models');
+const { User, Spot, SpotImage, Review, ReviewImage } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
 const { createError } = require('../../utils/validation');
 const vrb = require('../../utils/validateReqBody');
@@ -9,8 +9,22 @@ const bqv = require('../../utils/bodyQueryValidators');
 // Get all Reviews of the Current User
 router.get('/current', requireAuth, async (req,res) => {
 	res.json({
-    Reviews: await Review.findAll({
-      where: { userId: req.user.id }
+    Reviews: (await Review.findAll({
+      where: { userId: req.user.id },
+      include: [
+        User.scope('noUsername'),
+        {
+          model: Spot,
+          attributes: { exclude: ['description', 'createdAt', 'updatedAt'] },
+          include: SpotImage
+        },
+        ReviewImage ]
+    })).map(review => {
+      let r = review.toJSON()
+      const firstPreview = r.Spot.SpotImages.filter(i=>i.preview)[0]
+      r.Spot.previewImage = firstPreview?.url || ''
+      delete r.Spot.SpotImages
+      return r
     })
   })
 })
