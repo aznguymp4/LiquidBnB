@@ -24,6 +24,13 @@ module.exports = (sequelize, DataTypes) => {
           hooks: true
         }
       )
+      Spot.hasMany(
+        models.Review, {
+          foreignKey: 'spotId',
+          onDelete: 'CASCADE',
+          hooks: true
+        }
+      )
     }
   }
   Spot.init({
@@ -56,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(50),
       allowNull: false,
       validate: {
         len: [1, 50]

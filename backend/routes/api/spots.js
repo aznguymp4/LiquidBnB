@@ -1,86 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { User, Spot, SpotImage } = require('../../db/models');
-const { Op } = require("sequelize");
-const { body, query } = require('express-validator');
-const { handleValidationErrors } = require('../../utils/validation');
+const { Sequelize, Op } = require("sequelize");
+const { User, Spot, SpotImage, Review, ReviewImage } = require('../../db/models');
+const { createError } = require('../../utils/validation');
 const { requireAuth } = require('../../utils/auth');
-const { checkSpotExists, checkSpotExistsAndBelongsToUser } = require('../../utils/validateReqBody');
-
-const validateSpotCreate = [
-  body('address')
-    .exists({ checkFalsy: true }).withMessage('Street address is required')
-    .isString().withMessage('body.address must be a string'),
-  body('city')
-    .exists({ checkFalsy: true }).withMessage('City is required')
-    .isString().withMessage('body.city must be a string'),
-  body('state')
-    .exists({ checkFalsy: true }).withMessage('State is required')
-    .isString().withMessage('body.state must be a string'),
-  body('country')
-    .exists({ checkFalsy: true }).withMessage('Country is required')
-    .isString().withMessage('body.country must be a string'),
-  body('lat')
-    .exists({ checkFalsy: true }).withMessage('Latitude is not valid')
-    .not().isString().withMessage('body.lat must be a number'),
-  body('lng')
-    .exists({ checkFalsy: true }).withMessage('Longitude is not valid')
-    .not().isString().withMessage('body.lng must be a number'),
-  body('name')
-    .exists({ checkFalsy: true })
-    .isLength({max: 50}).withMessage('Name must be less than 50 characters')
-    .isString().withMessage('body.name must be a string'),
-  body('description')
-    .exists({ checkFalsy: true }).withMessage('Description is required')
-    .isString().withMessage('body.description must be a string'),
-  body('price')
-    .exists({ checkFalsy: true }).withMessage('Price per day is required')
-    .not().isString().withMessage('body.price must be a number'),
-  handleValidationErrors
-];
-const validateSpotImageCreate = [
-  body('url')
-    .exists({ checkFalsy: true }).withMessage('URL is required')
-    .isString().withMessage('body.url must be a string')
-    .isURL().withMessage('body.url must be a valid URL'),
-  body('preview')
-    .exists().withMessage('Preview is required (boolean)')
-    .isBoolean().withMessage('body.preview must be a boolean'),
-  handleValidationErrors
-];
-const validateSpotQueryFilter = [
-  query('page')
-    .toInt()
-    .customSanitizer(v => Math.max(1, Math.min(10, v)))
-    .isInt().withMessage('Page must be greater than or equal to 1')
-    .default(1),
-  query('size')
-    .toInt()
-    .customSanitizer(v => Math.max(1, Math.min(20, v)))
-    .isInt().withMessage('Size must be greater than or equal to 1')
-    .default(20),
-  query('minLat')
-    .isDecimal().withMessage('Maximum latitude is invalid')
-    .toFloat(),
-  query('maxLat')
-    .isDecimal().withMessage('Minimum latitude is invalid')
-    .toFloat(),
-  query('minLng')
-    .isDecimal().withMessage('Maximum longitude is invalid')
-    .toFloat(),
-  query('maxLng')
-    .isDecimal().withMessage('Minimum longitude is invalid')
-    .toFloat(),
-  query('minPrice')
-    .isFloat({ min: 0 }).withMessage('Minimum price must be greater than or equal to 0')
-    .toFloat(),
-  query('maxPrice')
-    .isFloat({ min: 0 }).withMessage('Maximum price must be greater than or equal to 0')
-    .toFloat(),
-]
+const vrb = require('../../utils/validateReqBody');
+const bqv = require('../../utils/bodyQueryValidators');
 
 // Get all Spots
-router.get('/', validateSpotQueryFilter, async (req,res) => {
+router.get('/', bqv.validateSpotQueryFilter, async (req,res) => {
   const q = req.query
 
   const where = {};
@@ -121,42 +49,73 @@ router.get('/current', requireAuth, async (req,res) => {
 })
 
 // Get details of a Spot from an id
-router.get('/:spotId', checkSpotExists, async (req,res) => {
+router.get('/:spotId', async (req,res,next) => {
   const { spotId } = req.params
-  res.json(await Spot.findByPk(spotId, {
+  const spot = await Spot.findByPk(spotId, {
+    attributes: {
+      include: [
+        [Sequelize.fn('COUNT', Sequelize.col('Reviews.id')), 'numReviews'],
+        [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgStarRating']
+      ]
+    },
     include: [
       SpotImage,
-      {model: User.scope('spotOwner'), as: 'Owner'}
+      {model: Review, attributes: []},
+      {model: User.scope('noUsername'), as: 'Owner'}
     ]
-  }))
+  })
+  if(!spot.id) return next(createError(`Spot couldn't be found`, 404))
+  res.json(spot)
 })
 
 // Create a Spot
-router.post('/', requireAuth, validateSpotCreate, async (req,res) => {
+router.post('/', requireAuth, bqv.validateSpotCreate, async (req,res) => {
   const { user } = req
   req.body.ownerId = user.id
+  res.status(201)
   res.json(await Spot.create(req.body))
 })
 
 // Edit a Spot
-router.put('/:spotId', requireAuth, checkSpotExistsAndBelongsToUser, validateSpotCreate, async (req,res) => {
+router.put('/:spotId', requireAuth, vrb.checkSpotExistsAndBelongsToUser, bqv.validateSpotCreate, async (req,res) => {
   const { spot } = req
   await spot.update(req.body)
   res.json(spot)
 })
 
 // Delete a Spot
-router.delete('/:spotId', requireAuth, checkSpotExistsAndBelongsToUser, async (req,res) => {
+router.delete('/:spotId', requireAuth, vrb.checkSpotExistsAndBelongsToUser, async (req,res) => {
   const { spot } = req
   await spot.destroy()
   res.json({message: 'Successfully deleted'})
 })
 
 // Add an Image to a Spot based on the Spot's id
-router.post('/:spotId/images', requireAuth, checkSpotExistsAndBelongsToUser, validateSpotImageCreate, async (req,res) => {
+router.post('/:spotId/images', requireAuth, vrb.checkSpotExistsAndBelongsToUser, bqv.validateSpotImageCreate, async (req,res) => {
   req.body.spotId = req.params.spotId
   const newImage = await SpotImage.create(req.body)
   res.json(newImage)
+})
+
+// Get all Reviews by a Spot's id
+router.get('/:spotId/reviews', vrb.checkSpotExists, async (req,res) => {
+  const { spot } = req
+  res.json({
+    Reviews: await Review.findAll({
+      where: {spotId: spot.id},
+      include: [ User.scope('noUsername'), ReviewImage ]
+    })
+  })
+})
+
+// Create a Review for a Spot based on the Spot's id
+router.post('/:spotId/reviews', requireAuth, vrb.checkSpotExists, bqv.validateReviewCreate, async (req,res,next) => {
+  const [userId,spotId] = [req.user.id,req.spot.id]
+  if(await Review.findOne({ where: { spotId, userId } })) return next(createError('User already has a review for this spot', 500))
+
+  const newReview = await Review.create({ userId, spotId, ...req.body })
+  res.status(201)
+  res.json(newReview)
 })
 
 module.exports = router;

@@ -12,6 +12,13 @@ module.exports = (sequelize, DataTypes) => {
 					hooks: true
 				}
 			)
+	User.hasMany(
+		models.Review, {
+			foreignKey: 'userId',
+				onDelete: 'CASCADE',
+				hooks: true
+		}
+	)
 		}
 	};
 
@@ -64,13 +71,11 @@ module.exports = (sequelize, DataTypes) => {
 			sequelize,
 			modelName: 'User',
 			defaultScope: {
-				attributes: {
-					exclude
-				}
+				attributes: { exclude }
 			},
-      scopes: {
-        spotOwner: { attributes: { exclude: [...exclude, "username"] } }
-      }
+			scopes: {
+				noUsername: { attributes: { exclude: [...exclude, "username"] } }
+			}
 		}
 	);
 	return User;

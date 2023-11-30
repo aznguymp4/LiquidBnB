@@ -7,7 +7,9 @@ router.use(restoreUser);
 	'session',
 	'users',
 	'spots',
-	'spot-images'
+	'spot-images',
+	'reviews',
+	'review-images'
 ].map(route => router.use('/'+route, require(`./${route}.js`)))
 
 router.post('/test', (req, res) => {
