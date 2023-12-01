@@ -31,6 +31,13 @@ module.exports = (sequelize, DataTypes) => {
           hooks: true
         }
       )
+      Spot.hasMany(
+        models.Booking, {
+          foreignKey: 'spotId',
+          onDelete: 'CASCADE',
+          hooks: true
+        }
+      )
     }
   }
   Spot.init({
@@ -80,6 +87,9 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Spot',
+    scopes: {
+      basicView: { attributes: {exclude: ['description', 'createdAt', 'updatedAt']} }
+    }
   });
   return Spot;
 };

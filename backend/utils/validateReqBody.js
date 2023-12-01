@@ -1,4 +1,4 @@
-const { User, Spot, SpotImage, Review, ReviewImage } = require('../db/models');
+const { User, Spot, SpotImage, Review, ReviewImage, Booking } = require('../db/models');
 const { createError } = require('./validation')
 const x = undefined
 
@@ -11,11 +11,14 @@ module.exports = {
 	},
 	checkSpotExistsAndBelongsToUser: async (req, res, next) => {
     const { user } = req
-		const { spotId } = req.params
-    req.spot = await Spot.findByPk(spotId)
-
+    req.spot = await Spot.findByPk(req.params.spotId)
     if(!req.spot) return next(createError(`Spot couldn't be found`, 404))
-    return next(user.id!==req.spot.ownerId? createError('Attempted to modify Spot of another user', 401) : x)
+
+    return next(
+      user.id!==req.spot.ownerId+(req.invertOwn?-1:0)?
+      createError(`Spot ${req.invertOwn? 'must belong' : 'belongs'} to another user`, 401)
+      : x
+    )
   },
   checkSpotImageExistsAndBelongsToUser: async (req, res, next) => {
     const { user } = req
@@ -24,16 +27,15 @@ module.exports = {
     req.spot = await Spot.findByPk(req.spotImage.spotId)
     if(!req.spot) return next(createError(`Spot associated with Spot Image couldn't be found`, 404))
 
-    return next(req.spot.ownerId !== user.id? createError('Attempted to modify Spot Image of another user', 401) : x)
+    return next(req.spot.ownerId !== user.id? createError('Spot Image belongs to another user', 401) : x)
 	},
 
   checkReviewExistsAndBelongsToUser: async (req, res, next) => {
     const { user } = req
-		const { reviewId } = req.params
-    req.review = await Review.findByPk(reviewId, req.includeImages? {include: [ReviewImage]} : undefined)
+    req.review = await Review.findByPk(req.params.reviewId, req.includeImages? {include: [ReviewImage]} : undefined)
 
     if(!req.review) return next(createError(`Review couldn't be found`, 404))
-    return next(user.id!==req.review.userId? createError('Attempted to modify Review of another user', 401) : x)
+    return next(user.id!==req.review.userId? createError('Review belongs to another user', 401) : x)
   },
   checkReviewImageExistsAndBelongsToUser: async (req, res, next) => {
     const { user } = req
@@ -42,6 +44,13 @@ module.exports = {
     req.review = await Review.findByPk(req.reviewImage.reviewId)
     if(!req.review) return next(createError(`Review associated with Review Image couldn't be found`, 404))
 
-    return next(req.review.userId !== user.id? createError('Attempted to modify Review Image of another user', 401) : x)
+    return next(req.review.userId !== user.id? createError('Review Image belongs to another user', 401) : x)
+	},
+  checkBookingExistsAndBelongsToUser: async (req, res, next) => {
+    const { user } = req
+    req.booking = await Booking.unscoped().findByPk(req.params.bookingId)
+
+    if(!req.booking) return next(createError(`Booking couldn't be found`, 404))
+    return next(req.booking.userId !== user.id? createError('Booking belongs to another user', 401) : x)
 	},
 };

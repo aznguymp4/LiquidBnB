@@ -1,5 +1,9 @@
 const { body, query } = require('express-validator');
 const { handleValidationErrors } = require('./validation');
+const { createError } = require('./validation');
+const { Booking } = require('../db/models')
+const { Op } = require("sequelize");
+const dateRegex = /^\d{4}-((((0[13578])|(1[02]))-(([0-2][0-9])|(3[01])))|(((0[469])|(11))-(([0-2][0-9])|(30)))|(02-[0-2][0-9]))$/gm // https://regex101.com/r/pQnOGW/1
 
 module.exports = {
 	validateSpotCreate: [
@@ -90,4 +94,52 @@ module.exports = {
 			.isURL().withMessage('body.url must be a valid URL'),
 		handleValidationErrors
 	],
+	validateBookingCreate: [
+		body('startDate')
+			.exists({ checkFalsy: true }).withMessage('Start Date is required')
+			.matches(dateRegex).withMessage('body.startDate must be a valid date (YYYY-MM-DD)')
+			.custom(start=>new Date(start) > new Date()).withMessage('startDate cannot be in the past'),
+			body('endDate')
+			.exists({ checkFalsy: true }).withMessage('end Date is required')
+			.matches(dateRegex).withMessage('body.endDate must be a valid date (YYYY-MM-DD)')
+			.custom((end,{req})=>req.body.startDate<end).withMessage('endDate cannot be on or before startDate')
+			.custom(end=>new Date(end) > new Date()).withMessage('endDate cannot be in the past'),
+		handleValidationErrors,
+		async (r,res,n) => {
+			const parsed = {}
+			const invalid = ['startDate','endDate'].map(p => {
+				const date = r.body[p]
+				const d8 = new Date(date)
+				const [y,m,d] = date.split('-').map(a=>parseInt(a))
+				const valid 
+				=	(parseInt(d8.getUTCFullYear()) === y)
+				&&  (parseInt(d8.getUTCMonth()) === m-1)
+				&&  (parseInt(d8.getUTCDate()) === d)
+				parsed[p.replace('Date','')] = d8
+				return valid? undefined : p
+			}).filter(Boolean)
+			if(invalid.length) return n(createError(`${invalid.join(' && ')} format is correct but date is not valid`, 400))
+			
+			parsed.start.setUTCHours(0,0,0,0); parsed.end.setUTCHours(23,59,59,999)
+			// ^^^ Make start and end dates take up all the time in those set days
+			// This is necessary, because normally the same dates with different times wouldn't be considered conflicting
+			// Example: 2023-01-01 12:00 and 2023-01-01 15:00 are different times, but are considered the same day and will return a booking confict error
+			
+			const dateRangeCheck = { [Op.between]: [parsed.start, parsed.end] }
+
+			// Check if dates conflict with existing bookings
+			const conflict = await Booking.unscoped().findOne({where:{[Op.and]:{[Op.not]:{id:r.params.bookingId},[Op.or]:{[Op.or]:{startDate:dateRangeCheck,endDate:dateRangeCheck},[Op.and]:{startDate:{[Op.lte]:parsed.start},endDate:{[Op.gte]:parsed.end}}}}}})
+			if(conflict) {
+				console.log(conflict.toJSON())
+				conflict.startDate.setUTCHours(0,0,0,0); conflict.endDate.setUTCHours(23,59,59,999)
+				const errors = {}
+				const [s,e] = [conflict.startDate <= parsed.start, conflict.endDate >= parsed.end]
+
+				if(s||!e) errors.startDate = "Start date conflicts with an existing booking"
+				if(e||!s) errors.endDate = "End date conflicts with an existing booking"
+
+				return res.status(403).json({message: "Sorry, this spot is already booked for the specified dates", errors})
+			}
+		n()}
+	]
 }
