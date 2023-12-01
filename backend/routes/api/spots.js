@@ -1,19 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const { Sequelize, Op } = require("sequelize");
-const { User, Spot, SpotImage, Review, ReviewImage } = require('../../db/models');
+const { User, Spot, SpotImage, Review, ReviewImage, Booking } = require('../../db/models');
 const { createError } = require('../../utils/validation');
 const { requireAuth } = require('../../utils/auth');
 const vrb = require('../../utils/validateReqBody');
 const bqv = require('../../utils/bodyQueryValidators');
+const prvwImg = require('../../utils/previewImage');
 
 // Get all Spots
 router.get('/', bqv.validateSpotQueryFilter, async (req,res) => {
   const q = req.query
 
-  const where = {};
+  const where = {}
   // Range-based Queries (DRY version of this: https://pbs.twimg.com/media/GAJFwBpXoAAnJc6?format=jpg)
-  ['lat','lng','price'].map(key => {
+  ;['lat','lng','price'].map(key => {
     const Key = key[0].toUpperCase() + key.slice(1)
     const [minK, maxK] = ['min'+Key, 'max'+Key]
     if(q[minK] || q[maxK]) {
@@ -22,20 +23,13 @@ router.get('/', bqv.validateSpotQueryFilter, async (req,res) => {
       if(q[maxK]) where[key][Op.lte] = q[maxK]
     }
   })
-
   res.json({
-    Spots: (await Spot.findAll({
+    Spots: prvwImg(await Spot.findAll({
       where,
       include: SpotImage,
       offset: q.size * (q.page - 1),
       limit: q.size
-    })).map(spot => {
-      let s = spot.toJSON()
-      const firstPreview = s.SpotImages.filter(i=>i.preview)[0]
-      s.previewImage = firstPreview?.url || ''
-      delete s.SpotImages
-      return s
-    }),
+    })),
     page: q.page,
     size: q.size
   })
@@ -72,8 +66,7 @@ router.get('/:spotId', async (req,res,next) => {
 router.post('/', requireAuth, bqv.validateSpotCreate, async (req,res) => {
   const { user } = req
   req.body.ownerId = user.id
-  res.status(201)
-  res.json(await Spot.create(req.body))
+  res.status(201).json(await Spot.create(req.body))
 })
 
 // Edit a Spot
@@ -114,8 +107,28 @@ router.post('/:spotId/reviews', requireAuth, vrb.checkSpotExists, bqv.validateRe
   if(await Review.findOne({ where: { spotId, userId } })) return next(createError('User already has a review for this spot', 500))
 
   const newReview = await Review.create({ userId, spotId, ...req.body })
-  res.status(201)
-  res.json(newReview)
+  res.status(201).json(newReview)
+})
+
+// Get all Bookings for a Spot based on the Spot's id
+router.get('/:spotId/bookings', requireAuth, vrb.checkSpotExists, async (req,res) => {
+  const { spotId } = req.params
+  const userOwnsSpot = req.user.id === req.spot.ownerId
+
+  res.json({
+    Bookings: await ((userOwnsSpot? Booking.unscoped() : Booking).findAll({
+      include: userOwnsSpot? [ User.scope('noUsername') ] : [],
+      where: { spotId }
+    }))
+  })
+})
+
+// Create a Booking from a Spot based on the Spot's id
+router.post('/:spotId/bookings', requireAuth, (r,_,n)=>{r.invertOwn=true;n()}, vrb.checkSpotExistsAndBelongsToUser, bqv.validateBookingCreate, async (req,res) => {
+  const { user, spot } = req
+
+  const newBooking = await Booking.create({ userId: user.id, spotId: spot.id, ...req.body })
+  res.json(newBooking)
 })
 
 module.exports = router;
