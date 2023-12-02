@@ -9,9 +9,8 @@ const bqv = require('../../utils/bodyQueryValidators');
 const prvwImg = require('../../utils/previewImage');
 
 // Get all Spots
-router.get('/', bqv.validateSpotQueryFilter, async (req,res) => {
+router.get('/', (r,_,n)=>{r.originalQuerySize=Object.keys(r.query).length;n()}, bqv.validateSpotQueryFilter, async (req,res) => {
   const q = req.query
-
   const where = {}
   // Range-based Queries (DRY version of this: https://pbs.twimg.com/media/GAJFwBpXoAAnJc6?format=jpg)
   ;['lat','lng','price'].map(key => {
@@ -23,16 +22,19 @@ router.get('/', bqv.validateSpotQueryFilter, async (req,res) => {
       if(q[maxK]) where[key][Op.lte] = q[maxK]
     }
   })
-  res.json({
+  const obj = {
     Spots: prvwImg(await Spot.findAll({
       where,
       include: SpotImage,
       offset: q.size * (q.page - 1),
       limit: q.size
-    })),
-    page: q.page,
-    size: q.size
-  })
+    }))
+  }
+  if(req.originalQuerySize) {
+    obj.page = q.page,
+    obj.size = q.size
+  }
+  res.json(obj)
 })
 
 // Get all Spots owned by the Current User
