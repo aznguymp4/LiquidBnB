@@ -13,9 +13,9 @@ module.exports = {
     const { user } = req
     req.spot = await Spot.findByPk(req.params.spotId)
     if(!req.spot) return next(createError(`Spot couldn't be found`, 404))
-
+    
     return next(
-      user.id!==req.spot.ownerId+(req.invertOwn?-1:0)?
+      (user.id!==req.spot.ownerId)+(req.invertOwn?-1:0)?
       createError(`Spot ${req.invertOwn? 'must belong' : 'belongs'} to another user`, 401)
       : x
     )

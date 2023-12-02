@@ -5,18 +5,18 @@ const { requireAuth } = require('../../utils/auth');
 const { createError } = require('../../utils/validation');
 const bqv = require('../../utils/bodyQueryValidators');
 const vrb = require('../../utils/validateReqBody');
-const prvwImg = require('../../utils/previewImage');
+const agg = require('../../utils/aggregate');
 
 // Get all of the Current User's Bookings
 router.get('/current', requireAuth, async (req,res) => {
 	res.json({
-		Bookings: prvwImg(await Booking.unscoped().findAll({
+		Bookings: agg.previewImage(await Booking.unscoped().findAll({
 			include: [{
 				model: Spot.scope('basicView'),
 				include: SpotImage
 			}],
 			where: { userId: req.user.id }
-		}), true)
+		}),true,true)
 	})
 })
 

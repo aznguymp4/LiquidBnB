@@ -6,11 +6,14 @@ const { createError } = require('../../utils/validation');
 const { requireAuth } = require('../../utils/auth');
 const vrb = require('../../utils/validateReqBody');
 const bqv = require('../../utils/bodyQueryValidators');
-const prvwImg = require('../../utils/previewImage');
+const agg = require('../../utils/aggregate');
 
 // Get all Spots
-router.get('/', (r,_,n)=>{r.originalQuerySize=Object.keys(r.query).length;n()}, bqv.validateSpotQueryFilter, async (req,res) => {
+router.get('/', (r,_,n)=>{r.originalQuerySize=Object.keys(r.query).length;n()}, bqv.validateSpotQueryFilter, async (req,res,next) => {
   const q = req.query
+  // if(q.page<1||q.page>10) throw new Error('Page must be greater than or equal to 1')
+  // if(q.size<1||q.size>20) throw new Error('Size must be greater than or equal to 1')
+  
   const where = {}
   // Range-based Queries (DRY version of this: https://pbs.twimg.com/media/GAJFwBpXoAAnJc6?format=jpg)
   ;['lat','lng','price'].map(key => {
@@ -23,12 +26,12 @@ router.get('/', (r,_,n)=>{r.originalQuerySize=Object.keys(r.query).length;n()}, 
     }
   })
   const obj = {
-    Spots: prvwImg(await Spot.findAll({
+    Spots: agg.previewImage(agg.avgRating(await Spot.findAll({
       where,
-      include: SpotImage,
+      include: [SpotImage, Review],
       offset: q.size * (q.page - 1),
       limit: q.size
-    }))
+    }), true))
   }
   if(req.originalQuerySize) {
     obj.page = q.page,
@@ -40,7 +43,10 @@ router.get('/', (r,_,n)=>{r.originalQuerySize=Object.keys(r.query).length;n()}, 
 // Get all Spots owned by the Current User
 router.get('/current', requireAuth, async (req,res) => {  
   res.json({
-    Spots: await Spot.findAll({ where: { ownerId: req.user.id } })
+    Spots: agg.previewImage(agg.avgRating(await Spot.findAll({
+      where: { ownerId: req.user.id },
+      include: [SpotImage, Review]
+    }), true))
   })
 })
 
@@ -51,7 +57,7 @@ router.get('/:spotId', async (req,res,next) => {
     attributes: {
       include: [
         [Sequelize.fn('COUNT', Sequelize.col('Reviews.id')), 'numReviews'],
-        [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgStarRating']
+        [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgRating']
       ]
     },
     include: [
@@ -81,7 +87,7 @@ router.put('/:spotId', requireAuth, vrb.checkSpotExistsAndBelongsToUser, bqv.val
 // Delete a Spot
 router.delete('/:spotId', requireAuth, vrb.checkSpotExistsAndBelongsToUser, async (req,res) => {
   const { spot } = req
-  await spot.destroy()
+  await spot.destroy({ where: { id: spot.id } }) // For some reason it doesn't work half the time without the where??
   res.json({message: 'Successfully deleted'})
 })
 
@@ -89,7 +95,8 @@ router.delete('/:spotId', requireAuth, vrb.checkSpotExistsAndBelongsToUser, asyn
 router.post('/:spotId/images', requireAuth, vrb.checkSpotExistsAndBelongsToUser, bqv.validateSpotImageCreate, async (req,res) => {
   req.body.spotId = req.params.spotId
   const newImage = await SpotImage.create(req.body)
-  res.json(newImage)
+  const {id,url,preview} = newImage
+  res.json({id,url,preview})
 })
 
 // Get all Reviews by a Spot's id

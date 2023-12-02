@@ -5,12 +5,12 @@ const { requireAuth } = require('../../utils/auth');
 const { createError } = require('../../utils/validation');
 const vrb = require('../../utils/validateReqBody');
 const bqv = require('../../utils/bodyQueryValidators');
-const prvwImg = require('../../utils/previewImage');
+const agg = require('../../utils/aggregate');
 
 // Get all Reviews of the Current User
 router.get('/current', requireAuth, async (req,res) => {
 	res.json({
-    Reviews: prvwImg(await Review.findAll({
+    Reviews: agg.previewImage(await Review.findAll({
       where: { userId: req.user.id },
       include: [
         User.scope('noUsername'),
@@ -20,7 +20,7 @@ router.get('/current', requireAuth, async (req,res) => {
         },
         ReviewImage
       ]
-    }), true)
+    }), true, true)
   })
 })
 

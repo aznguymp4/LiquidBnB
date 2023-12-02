@@ -20,10 +20,10 @@ module.exports = {
 			.exists({ checkFalsy: true }).withMessage('Country is required')
 			.isString().withMessage('body.country must be a string'),
 		body('lat')
-			.exists({ checkFalsy: true }).withMessage('Latitude is not valid')
+			.exists({ checkFalsy: true }).isFloat({ min:-180, max:180 }).withMessage('Latitude is not valid')
 			.not().isString().withMessage('body.lat must be a number'),
 		body('lng')
-			.exists({ checkFalsy: true }).withMessage('Longitude is not valid')
+			.exists({ checkFalsy: true }).isFloat({ min:-180, max:180 }).withMessage('Longitude is not valid')
 			.not().isString().withMessage('body.lng must be a number'),
 		body('name')
 			.exists({ checkFalsy: true })
@@ -33,7 +33,7 @@ module.exports = {
 			.exists({ checkFalsy: true }).withMessage('Description is required')
 			.isString().withMessage('body.description must be a string'),
 		body('price')
-			.exists({ checkFalsy: true }).withMessage('Price per day is required')
+			.exists({ checkFalsy: true }).custom(v=>!isNaN(v) && v>0).withMessage('Price per day is required')
 			.not().isString().withMessage('body.price must be a number'),
 		handleValidationErrors
 	],
@@ -50,25 +50,25 @@ module.exports = {
 	validateSpotQueryFilter: [
 		query('page')
 			.toInt()
-			.customSanitizer(v => Math.max(1, Math.min(10, v)))
-			.isInt().withMessage('Page must be greater than or equal to 1')
+			// .customSanitizer(v => Math.max(1, Math.min(10, v)))
+			.isInt({ min: 1, max: 10 }).withMessage('Page must be greater than or equal to 1')
 			.default(1),
 		query('size')
 			.toInt()
-			.customSanitizer(v => Math.max(1, Math.min(20, v)))
-			.isInt().withMessage('Size must be greater than or equal to 1')
+			// .customSanitizer(v => Math.max(1, Math.min(20, v)))
+			.isInt({ min: 1, max: 20 }).withMessage('Size must be greater than or equal to 1')
 			.default(20),
 		query('minLat')
-			.isDecimal().withMessage('Maximum latitude is invalid')
+			.isFloat({ min: -180, max: 180 }).withMessage('Maximum latitude is invalid')
 			.toFloat(),
 		query('maxLat')
-			.isDecimal().withMessage('Minimum latitude is invalid')
+			.isFloat({ min: -180, max: 180 }).withMessage('Minimum latitude is invalid')
 			.toFloat(),
 		query('minLng')
-			.isDecimal().withMessage('Maximum longitude is invalid')
+			.isFloat({ min: -180, max: 180 }).withMessage('Maximum longitude is invalid')
 			.toFloat(),
 		query('maxLng')
-			.isDecimal().withMessage('Minimum longitude is invalid')
+			.isFloat({ min: -180, max: 180 }).withMessage('Minimum longitude is invalid')
 			.toFloat(),
 		query('minPrice')
 			.isFloat({ min: 0 }).withMessage('Minimum price must be greater than or equal to 0')
@@ -76,6 +76,7 @@ module.exports = {
 		query('maxPrice')
 			.isFloat({ min: 0 }).withMessage('Maximum price must be greater than or equal to 0')
 			.toFloat(),
+		handleValidationErrors
 	],
 	validateReviewCreate: [
 		body('review')
@@ -90,8 +91,8 @@ module.exports = {
 	validateReviewImageCreate: [
 		body('url')
 			.exists({ checkFalsy: true }).withMessage('URL is required')
-			.isString().withMessage('body.url must be a string')
-			.isURL().withMessage('body.url must be a valid URL'),
+			.isString().withMessage('body.url must be a string'),
+			// .isURL().matches(/\.\w{1,}$/).withMessage('body.url must be a valid URL'),
 		handleValidationErrors
 	],
 	validateBookingCreate: [
@@ -128,7 +129,7 @@ module.exports = {
 			const dateRangeCheck = { [Op.between]: [parsed.start, parsed.end] }
 
 			// Check if dates conflict with existing bookings
-			const conflict = await Booking.unscoped().findOne({where:{[Op.and]:{[Op.not]:{id:r.params.bookingId},[Op.or]:{[Op.or]:{startDate:dateRangeCheck,endDate:dateRangeCheck},[Op.and]:{startDate:{[Op.lte]:parsed.start},endDate:{[Op.gte]:parsed.end}}}}}})
+			const conflict = await Booking.unscoped().findOne({where:{[Op.and]:{[Op.not]:{id:r.params.bookingId || 0},[Op.or]:{[Op.or]:{startDate:dateRangeCheck,endDate:dateRangeCheck},[Op.and]:{startDate:{[Op.lte]:parsed.start},endDate:{[Op.gte]:parsed.end}}}}}})
 			if(conflict) {
 				console.log(conflict.toJSON())
 				conflict.startDate.setUTCHours(0,0,0,0); conflict.endDate.setUTCHours(23,59,59,999)
