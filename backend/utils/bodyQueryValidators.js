@@ -49,31 +49,37 @@ module.exports = {
 	],
 	validateSpotQueryFilter: [
 		query('page')
+			.default(1)
 			.toInt()
 			// .customSanitizer(v => Math.max(1, Math.min(10, v)))
-			.isInt({ min: 1, max: 10 }).withMessage('Page must be greater than or equal to 1')
-			.default(1),
+			.isInt({ min: 1, max: 10 }).withMessage('Page must be greater than or equal to 1'),
 		query('size')
+			.default(20)
 			.toInt()
 			// .customSanitizer(v => Math.max(1, Math.min(20, v)))
-			.isInt({ min: 1, max: 20 }).withMessage('Size must be greater than or equal to 1')
-			.default(20),
+			.isInt({ min: 1, max: 20 }).withMessage('Size must be greater than or equal to 1'),
 		query('minLat')
+			.default(-180)
 			.isFloat({ min: -180, max: 180 }).withMessage('Maximum latitude is invalid')
 			.toFloat(),
 		query('maxLat')
+			.default(180)
 			.isFloat({ min: -180, max: 180 }).withMessage('Minimum latitude is invalid')
 			.toFloat(),
 		query('minLng')
+			.default(-180)
 			.isFloat({ min: -180, max: 180 }).withMessage('Maximum longitude is invalid')
 			.toFloat(),
 		query('maxLng')
+			.default(180)
 			.isFloat({ min: -180, max: 180 }).withMessage('Minimum longitude is invalid')
 			.toFloat(),
 		query('minPrice')
+			.default(0)
 			.isFloat({ min: 0 }).withMessage('Minimum price must be greater than or equal to 0')
 			.toFloat(),
 		query('maxPrice')
+			.default(2148473647)
 			.isFloat({ min: 0 }).withMessage('Maximum price must be greater than or equal to 0')
 			.toFloat(),
 		handleValidationErrors

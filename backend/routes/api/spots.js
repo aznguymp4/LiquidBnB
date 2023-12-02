@@ -10,10 +10,7 @@ const agg = require('../../utils/aggregate');
 
 // Get all Spots
 router.get('/', (r,_,n)=>{r.originalQuerySize=Object.keys(r.query).length;n()}, bqv.validateSpotQueryFilter, async (req,res,next) => {
-  const q = req.query
-  // if(q.page<1||q.page>10) throw new Error('Page must be greater than or equal to 1')
-  // if(q.size<1||q.size>20) throw new Error('Size must be greater than or equal to 1')
-  
+  const q = req.query  
   const where = {}
   // Range-based Queries (DRY version of this: https://pbs.twimg.com/media/GAJFwBpXoAAnJc6?format=jpg)
   ;['lat','lng','price'].map(key => {
@@ -29,6 +26,7 @@ router.get('/', (r,_,n)=>{r.originalQuerySize=Object.keys(r.query).length;n()}, 
     Spots: agg.previewImage(agg.avgRating(await Spot.findAll({
       where,
       include: [SpotImage, Review],
+      group: ['Spots.id'],
       offset: q.size * (q.page - 1),
       limit: q.size
     }), true))
