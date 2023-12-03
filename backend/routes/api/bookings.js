@@ -7,6 +7,8 @@ const bqv = require('../../utils/bodyQueryValidators');
 const vrb = require('../../utils/validateReqBody');
 const agg = require('../../utils/aggregate');
 
+const {Op} = require('sequelize')
+
 // Get all of the Current User's Bookings
 router.get('/current', requireAuth, async (req,res) => {
 	res.json({

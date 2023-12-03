@@ -26,7 +26,6 @@ router.get('/', (r,_,n)=>{r.originalQuerySize=Object.keys(r.query).length;n()}, 
     Spots: agg.previewImage(agg.avgRating(await Spot.findAll({
       where,
       include: [SpotImage, Review],
-      group: ['Spots.id'],
       offset: q.size * (q.page - 1),
       limit: q.size
     }), true))
@@ -50,21 +49,20 @@ router.get('/current', requireAuth, async (req,res) => {
 
 // Get details of a Spot from an id
 router.get('/:spotId', async (req,res,next) => {
-  const { spotId } = req.params
-  const spot = await Spot.findByPk(spotId, {
-    attributes: {
-      include: [
-        [Sequelize.fn('COUNT', Sequelize.col('Reviews.id')), 'numReviews'],
-        [Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 'avgRating']
-      ]
-    },
+  let spot = await Spot.findByPk(req.params.spotId, {
     include: [
       SpotImage,
-      {model: Review, attributes: []},
-      {model: User.scope('noUsername'), as: 'Owner'}
+      {model: User.scope('noUsername'), as: 'Owner'},
+      {model: Review, attributes: ['stars']}
     ]
   })
-  if(!spot.id) return next(createError(`Spot couldn't be found`, 404))
+  if(!spot) return next(createError(`Spot couldn't be found`, 404))
+
+  spot = spot.toJSON()
+  spot.numReviews = spot.Reviews.length
+  spot.avgRating = spot.Reviews.reduce((a,b)=>a+b.stars,0)/spot.Reviews.length
+  delete spot.Reviews
+
   res.json(spot)
 })
 

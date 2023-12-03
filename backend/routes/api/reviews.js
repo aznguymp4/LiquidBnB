@@ -14,10 +14,7 @@ router.get('/current', requireAuth, async (req,res) => {
       where: { userId: req.user.id },
       include: [
         User.scope('noUsername'),
-        {
-          model: Spot.scope('basicView'),
-          include: SpotImage
-        },
+        { model: Spot.scope('basicView'), include: SpotImage },
         ReviewImage
       ]
     }), true, true)

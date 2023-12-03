@@ -14,12 +14,6 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     await Booking.bulkCreate([
       {
-        userId: 1,
-        spotId: 8,
-        startDate: new Date(),
-        endDate: tenDaysFromNow
-      },
-      {
         userId: 2,
         spotId: 1,
         startDate: new Date(),
@@ -32,8 +26,8 @@ module.exports = {
     options.tableName = 'Bookings';
     const Op = Sequelize.Op;
     return queryInterface.bulkDelete(options, {
-      userId: { [Op.in]: [1,2] },
-      spotId: { [Op.in]: [8,1] }
+      userId: { [Op.in]: [2] },
+      spotId: { [Op.in]: [1] }
     }, {});
   }
 };
