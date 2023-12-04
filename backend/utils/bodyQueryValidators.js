@@ -48,6 +48,7 @@ module.exports = {
 		handleValidationErrors
 	],
 	validateSpotQueryFilter: [
+
 		query('page')
 			.default(1)
 			.toInt()
@@ -58,22 +59,18 @@ module.exports = {
 			.toInt()
 			// .customSanitizer(v => Math.max(1, Math.min(20, v)))
 			.isInt({ min: 1, max: 20 }).withMessage('Size must be greater than or equal to 1'),
-		query('minLat')
-			.default(-180)
-			.isFloat({ min: -180, max: 180 }).withMessage('Maximum latitude is invalid')
-			.toFloat(),
-		query('maxLat')
-			.default(180)
-			.isFloat({ min: -180, max: 180 }).withMessage('Minimum latitude is invalid')
-			.toFloat(),
-		query('minLng')
-			.default(-180)
-			.isFloat({ min: -180, max: 180 }).withMessage('Maximum longitude is invalid')
-			.toFloat(),
-		query('maxLng')
-			.default(180)
-			.isFloat({ min: -180, max: 180 }).withMessage('Minimum longitude is invalid')
-			.toFloat(),
+
+		query('minLat').default(-180).isFloat({ min: -180, max: 180 }).toFloat().withMessage('Maximum latitude is invalid'),
+		query('maxLat').default(180).isFloat({ min: -180, max: 180 }).toFloat().withMessage('Minimum latitude is invalid'),
+		query('minLng').default(-180).isFloat({ min: -180, max: 180 }).toFloat(),
+		query('maxLng').default(180).isFloat({ min: -180, max: 180 }).toFloat(),
+
+		// Called separately because default fallback values must be declared first
+		query('minLat').custom((v,{req})=>req.query.maxLat > v),
+		query('maxLat').custom((v,{req})=>req.query.minLat < v),
+		query('minLng').custom((v,{req})=>req.query.maxLng > v).withMessage('Maximum longitude is invalid'), // idk why it doesn't work when the messages aren't separated like this
+		query('maxLng').custom((v,{req})=>req.query.minLng < v).withMessage('Minimum longitude is invalid'),
+
 		query('minPrice')
 			.default(0)
 			.isFloat({ min: 0 }).withMessage('Minimum price must be greater than or equal to 0')
@@ -106,7 +103,7 @@ module.exports = {
 			.exists({ checkFalsy: true }).withMessage('Start Date is required')
 			.matches(dateRegex).withMessage('body.startDate must be a valid date (YYYY-MM-DD)')
 			.custom(start=>new Date(start) > new Date()).withMessage('startDate cannot be in the past'),
-			body('endDate')
+		body('endDate')
 			.exists({ checkFalsy: true }).withMessage('end Date is required')
 			.matches(dateRegex).withMessage('body.endDate must be a valid date (YYYY-MM-DD)')
 			.custom((end,{req})=>req.body.startDate<end).withMessage('endDate cannot be on or before startDate')
