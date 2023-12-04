@@ -1,6 +1,7 @@
 const { User, Spot, SpotImage, Review, ReviewImage, Booking } = require('../db/models');
 const { createError } = require('./validation')
 const x = undefined
+const frbdn = 'Forbidden'
 
 module.exports = {
 	checkSpotExists: async (req, res, next) => {
