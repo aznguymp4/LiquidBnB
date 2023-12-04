@@ -20,11 +20,15 @@ const handleValidationErrors = (req, _res, next) => {
 	next();
 };
 
-const createError = (message, status) => {
+const createError = (message, status, detailed) => {
 	const err = new Error(message)
+	err.status = status
+	if(!detailed) {
+		delete err.stack
+		return err
+	}
 	err.title = message
 	err.errors = { message }
-	err.status = status
 	return err
 }
 
