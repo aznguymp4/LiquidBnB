@@ -13,7 +13,7 @@ function LoginFormPage() {
 
 	if (sessionUser) return <Navigate to="/" replace={true} />;
 
-	const handleSubmit = (e) => {
+	const handleSubmit = e=>{
 		e.preventDefault();
 		setErrors({});
 		return dispatch(sessionActions.login({ credential, password })).catch(
@@ -33,7 +33,7 @@ function LoginFormPage() {
 					<input
 						type="text"
 						value={credential}
-						onChange={(e) => setCredential(e.target.value)}
+						onChange={e=>setCredential(e.target.value)}
 						required
 					/>
 				</label>
@@ -42,7 +42,7 @@ function LoginFormPage() {
 					<input
 						type="password"
 						value={password}
-						onChange={(e) => setPassword(e.target.value)}
+						onChange={e=>setPassword(e.target.value)}
 						required
 					/>
 				</label>
