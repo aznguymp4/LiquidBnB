@@ -28,7 +28,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <h1><img src="./public/logo-full.png" alt="" width="32"/> Welcome!</h1>
+        element: <h1><img src="./logo-full.png" alt="" width="32"/> Welcome!</h1>
       }
     ]
   }
