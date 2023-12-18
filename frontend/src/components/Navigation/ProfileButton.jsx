@@ -60,6 +60,7 @@ function ProfileButton({ user }) {
             <li>
               <OpenModalButton
                 buttonText="Log In"
+                buttonIconClass="fas fa-sign-in-alt"
                 onButtonClick={closeMenu}
                 modalComponent={<LoginFormModal />}
               />
@@ -67,6 +68,7 @@ function ProfileButton({ user }) {
             <li>
               <OpenModalButton
                 buttonText="Sign Up"
+                buttonIconClass="fas fa-user-plus"
                 onButtonClick={closeMenu}
                 modalComponent={<SignupFormModal />}
               />
