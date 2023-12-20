@@ -1,1 +1,32 @@
-/* TODO: Add sitewide styles */
+@import url('https://fonts.googleapis.com/css2?family=Rethink+Sans:ital,wght@0,400;0,600;0,800;1,400;1,600;1,800&display=swap');
+
+@media screen and (max-width: 720px) {
+    #navSpace::before {
+        content: "mobile view";
+    }
+    body {
+        padding: 0px 20px 0px !important;
+    }
+}
+
+:root {
+    --colWhite: #FFFFFF;
+    --colBlack: #000000;
+    --colGrayLight: #CCCCCC;
+    --colGray: #DDDDDD;
+    --colGrayDark: #999999;
+    --colGrayDarker: #717171;
+    --colRed: #FF5A5F;
+    --colTeal: #00525E;
+    --colTealLight: #E8F0FE;
+}
+
+body {
+    padding: 0px 40px 0px;
+    font-family: 'Rethink Sans', Arial, Helvetica, sans-serif;
+}
+
+a, a:visited {
+    text-decoration: none;
+    color: var(--colBlack)
+}

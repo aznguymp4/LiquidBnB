@@ -1,0 +1,11 @@
+/* .spotTile {
+    border: 1px green solid;
+} */
+
+.spotTileImg {
+    border-radius: 1em;
+    width: 100%;
+    aspect-ratio: 1/1;
+    background-color: var(--colGrayLight);
+    object-fit: cover;
+}

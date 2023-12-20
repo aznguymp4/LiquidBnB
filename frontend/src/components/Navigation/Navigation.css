@@ -1,1 +1,22 @@
-/* Todo */
+#navBar {
+    display: flex;
+    border-bottom: 1px solid var(--colGrayLight);
+}
+/* #navBar > div {border:green 1px solid;} */
+
+#navSpace {
+    width: 100%;
+}
+#navLogo {
+    height: 56px;
+    transition-property: opacity transform;
+    transition-duration: .1s;
+    transition-timing-function: ease-out;
+}
+#navLogo:hover {
+    cursor: pointer;
+    opacity: 80%;
+}
+#navLogo:active {
+    transform: scale(.97);
+}

@@ -22,6 +22,30 @@ module.exports = {
         name: "App Academy",
         description: "Place where web developers are created",
         price: 123
+      },
+      {
+        ownerId: 2,
+        address: "321 Something Street",
+        city: "Bikini Bottom",
+        state: "Oceania",
+        country: "United Seas of Atlanta",
+        lat: 63.2874012,
+        lng: 30.9834976,
+        name: "Krusty Krab",
+        description: "The best pizzas in Ocean!",
+        price: 321
+      },
+      {
+        ownerId: 2,
+        address: "456 EnderPearl Drive",
+        city: "Stronghold",
+        state: "PlanetMinecraft",
+        country: "United Blocks of America",
+        lat: -37.6502374,
+        lng: 87.5236978,
+        name: "Amazing House",
+        description: "Comfy!",
+        price: 64
       }
     ], { validate: true });
   },

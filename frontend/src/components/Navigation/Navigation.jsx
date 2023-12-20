@@ -7,16 +7,15 @@ function Navigation({ isLoaded }) {
   const sessionUser = useSelector(state => state.session.user);
 
   return (
-    <ul>
-      <li>
-        <NavLink exact to="/"><i className="fas fa-home"/> Home</NavLink>
-      </li>
-      {isLoaded && (
-        <li>
-          <ProfileButton user={sessionUser} />
-        </li>
-      )}
-    </ul>
+    <div id="navBar">
+      <div className="navLeft">
+        <NavLink exact to="/"><img id="navLogo" src="/logo-banner-small.png" alt="LiquidBnB Logo" title="Home Page"/></NavLink>
+      </div>
+      <div id="navSpace"></div>
+      <div className="navRight">
+        {isLoaded && <ProfileButton user={sessionUser}/>}
+      </div>
+    </div>
   );
 }
 
