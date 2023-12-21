@@ -3,7 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { callFetch1Spot } from '../../store/spots';
-// import { callDeleteReview } from '../../store/reviews';
+import { callFetchReviewsForSpot, callDeleteReview } from '../../store/reviews';
 import OpenModalButton from '../OpenModalButton';
 import ReviewFormModal from '../ReviewFormModal'
 import ReviewDeleteModal from '../ReviewDeleteModal'
@@ -15,12 +15,19 @@ function SpotDetails() {
   const { spotId } = useParams();
 	const dispatch = useDispatch();
 	const spot = useSelector(state => state.spots[spotId]);
+  const reviews = useSelector(state => state.reviews);
   const sessionUser = useSelector(state => state.session.user);
+  const userOwnsSpot = spot?.Owner?.id == sessionUser?.id
   const [searchParams] = useSearchParams();
   const reviewHighlight = searchParams.get('reviewJump')
+
 	useEffect(() => {
-		dispatch(callFetch1Spot(spotId, true));
+    dispatch(callFetchReviewsForSpot(spotId))
 	}, [dispatch, spotId]);
+
+  useEffect(() => {
+    dispatch(callFetch1Spot(spotId));
+  }, [dispatch, reviews, spotId])
 
   if(!spot) return null
   if(spot?.SpotImages?.length < 5) { // placeholder gray tiles for no emptiness!
@@ -66,9 +73,9 @@ function SpotDetails() {
     </div>
     <hr/>
     <div id="spotReviews">
-      {starSolid} {spot.numReviews? `${spot.avgRating||0}・${spot.numReviews} review${s}` : `New`}
+      {starSolid} {spot.numReviews? `${spot.avgRating||0}・${spot.numReviews} review${s}` : `New${userOwnsSpot || !sessionUser? '' : '・Be the first to post a review!'}`}
       {
-        spot.reviews?.find(r=>r.userId == sessionUser.id) ? <><br/><br/></> : <OpenModalButton
+        Object.values(reviews).find(r=>r.userId==sessionUser?.id) || userOwnsSpot || !sessionUser ? <><br/><br/></> : <OpenModalButton
           className="redBtn"
           id="spotReviewAddBtn"
           buttonText="Post Your Review"
@@ -78,13 +85,13 @@ function SpotDetails() {
       <div id="spotReviewList">
         {(()=>{
           let highlightIdx
-          const arr = spot.reviews?.map((review,idx) => {
-            const userOwnsReview = review.userId==sessionUser.id
+          const arr = Object.values(reviews)?.map((review,idx) => {
+            const userOwnsReview = review.userId==sessionUser?.id
             const highlighted = review.id==reviewHighlight || userOwnsReview
             if(highlighted) highlightIdx = idx
-            return <div key={review.id} className={`spotReview${highlighted? ' highlight' : ''}`}>
+            return <div key={review.id} id={`spotReviewId${review.id}`} className={`spotReview${highlighted? ' highlight' : ''}`}>
               <div className="spotReviewHeader">
-                {review.User.firstName}・
+                {review.User?.firstName}・
                 {(()=>{
                   const stars = new Array(review.stars).fill(starSolid)
                   for(let i=0;i<5-review.stars;i++) stars.push(starEmpty)
@@ -97,12 +104,13 @@ function SpotDetails() {
                 id="spotReviewDeleteBtn"
                 className="redBtn"
                 buttonText="Delete"
-                modalComponent={<ReviewDeleteModal reviewId={review.id}/>}
+                modalComponent={<ReviewDeleteModal confirmed={() => {
+                  dispatch(callDeleteReview(review.id))
+                }}/>}
               />}
             </div>
           })
 
-          
           if(!highlightIdx) return arr
           const moveUp = arr.splice(highlightIdx, 1)
           arr.unshift(moveUp)

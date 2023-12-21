@@ -20,24 +20,14 @@ export const callFetchReviewsForUser = () => dispatch => {
 	.then(d => dispatch(loadReviews(d.Reviews)))
 	.catch(console.error)
 };
-/* export const callFetch1Review = (id,getReviews=false) => dispatch => {
-	fetch('/api/reviews/'+id)
+export const callFetchReviewsForSpot = (spotId) => dispatch => {
+	fetch(`/api/spots/${spotId}/reviews/`)
 	.then(r=>r.json())
-	.then(d => {
-		if(getReviews) {
-			fetch(`/api/reviews/${id}/reviews`)
-			.then(r=>r.json())
-			.then(dd => {
-				dispatch(receiveReview({ ...d, reviews: dd.Reviews }))
-			})
-			.catch(console.error)
-		}
-		else dispatch(receiveReview(d))
-	})
+	.then(d => dispatch(loadReviews(d.Reviews)))
 	.catch(console.error)
-}; */
+};
 export const callCreateReview = (spotId, body, imgs) => dispatch => {
-  window.location.search = ''
+	window.location.search = ''
 	csrfFetch(`/api/spots/${spotId}/reviews`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
@@ -73,7 +63,7 @@ export const callCreateReview = (spotId, body, imgs) => dispatch => {
 export const callDeleteReview = reviewId => dispatch => {
 	csrfFetch(`/api/reviews/${reviewId}`, {method: 'DELETE'})
 	.then(r=>r.json())
-	.then(() => dispatch(removeReview(id)))
+	.then(() => dispatch(removeReview(reviewId)))
 	.catch(console.error)
 }
 

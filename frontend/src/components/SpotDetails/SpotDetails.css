@@ -3,6 +3,9 @@
         display: grid !important;
         grid-auto-flow: row;
     }
+    #spotInfoL {
+        width: 100% !important;
+    }
     #spotInfoR {
         width: calc(100% - 3em) !important;
         grid-row: 1;
