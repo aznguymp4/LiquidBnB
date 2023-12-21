@@ -13,7 +13,12 @@ function Navigation({ isLoaded }) {
       </div>
       <div id="navSpace"></div>
       <div id="navRight">
-        {sessionUser && <NavLink id="navAddSpot" to="/spots/new">Create a New Spot</NavLink>}
+        {sessionUser && <NavLink id="navAddSpot" to="/spots/new" title="Create a New Spot">
+          <span id="spotAddMobile">
+            <i className="fas fa-home"/> <i className="fas fa-plus"/>
+          </span>
+          <span id="spotAddDesktop">Create a New Spot</span>
+        </NavLink>}
         {isLoaded && <ProfileButton user={sessionUser}/>}
       </div>
       <div id="navHr"/>

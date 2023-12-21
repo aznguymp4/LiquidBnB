@@ -1,0 +1,33 @@
+#reviewFormModal {
+    width: 100vw;
+    max-width: 400px;
+    text-align: center;
+}
+#reviewFormTitle {
+    font-size: 24px;
+    font-weight: 800;
+    margin: .25em 0 .8em;
+    /* border: 1px solid green; */
+}
+#reviewFormTxt {
+    padding: .7em 1em .9em;
+}
+#reviewFormStars {
+    width: 100%;
+    margin: 1.5em 0 4px;
+}
+#reviewFormStarsLabel {
+    font-weight: 800;
+}
+#reviewFormStarsLabel > b {
+    font-size: xx-large;
+    text-shadow: 0px 2px 6px var(--colGrayLight);
+    vertical-align: middle;
+}
+.starInput:hover {
+    cursor: pointer;
+}
+#reviewFormSubmit {
+    padding: .7em 0;
+    margin: 1em 0;
+}

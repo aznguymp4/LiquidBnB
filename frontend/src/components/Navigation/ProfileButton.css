@@ -1,19 +1,25 @@
 #profileBtn {
     padding: 12px 10px 10px 14px;
-    border: 1px var(--colGray) solid;
-    border-radius: 50vw;
-    vertical-align: middle;
-    color: var(--colGrayDarker);
     width: max-content;
     height: min-content;
-    margin: 4px 4px 4px auto;
-    transition-property: box-shadow;
-    transition-duration: .075s;
-    transition-timing-function: ease-out;
+    margin: 4px 0 4px 1em;
+    vertical-align: middle;
 }
-#profileBtn:hover {
+#profileBtn, #spotAddMobile {
+    border-radius: 50vw;
+    color: var(--colGrayDarker);
+    border: 1px var(--colGray) solid;
+    transition-property: box-shadow background-color;
+    transition-duration: .2s;
+    transition-timing-function: var(--easeOut);
+}
+#profileBtn:hover, #spotAddMobile:hover {
     cursor: pointer;
     box-shadow: 0px 2px 4px var(--colGray);
+}
+#profileBtn:active, #spotAddMobile:active {
+    background-color: var(--colGray);
+    box-shadow: 0px 2px 4px var(--colGrayDarker);
 }
 #profileBtn > i+i {
     margin-left: 12px;

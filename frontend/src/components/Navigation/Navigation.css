@@ -1,3 +1,12 @@
+@media screen and (max-width: 550px) {
+    #spotAddMobile {
+        display: initial !important;
+    }
+    #spotAddDesktop {
+        display: none;
+    }
+}
+
 #navBar {
     display: flex;
     height: 61px;
@@ -19,18 +28,18 @@
     left: 0px;
 }
 
-/* #navBar > div {border:green 1px solid;} */
 #navAddSpot {
-    /* border: green 1px solid; */
-    margin: auto;
-    /* display: none; */
+    margin: auto 0 auto auto;
 }
-#navAddSpot:hover { /* link hover */
+#spotAddDesktop:hover { /* link hover */
     color: var(--colRed);
     text-decoration: underline;
 }
+#spotAddMobile {
+    display: none;
+    padding: 11px 1em;
+}
 #navRight {
-    /* border: green 1px solid; */
     display: inline-flex;
     width: 30em;
     height: min-content;
@@ -38,13 +47,13 @@
 }
 
 #navSpace {
-    width: 100%;
+    width: 40%;
 }
 #navLogo {
     height: 56px;
     transition-property: opacity transform;
-    transition-duration: .1s;
-    transition-timing-function: ease-out;
+    transition-duration: .2s;
+    transition-timing-function: var(--easeOut);
 }
 #navLogo:hover {
     cursor: pointer;

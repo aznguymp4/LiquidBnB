@@ -4,11 +4,11 @@ export const [LOAD_SPOTS,RECEIVE_SPOT] = ['spots/LOAD_SPOTS','spots/RECEIVE_SPOT
 export const loadSpots = spots => ({
 	type: LOAD_SPOTS,
 	spots
-});
+})
 export const receiveSpot = spot => ({
 	type: RECEIVE_SPOT,
 	spot
-});  
+})
 
 export const callFetchSpots = () => dispatch => {
 	fetch('/api/spots')
@@ -38,32 +38,32 @@ export const callCreateSpot = (body, imgs) => dispatch => {
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({...body, lat:10, lng:10}),
 	})
-  .then(r=>r.json())
-  .then(d => {
-    if(imgs) {
-      Promise.all(imgs.map((url,idx) => {
-        if(!url) return
-        csrfFetch(`/api/spots/${d.id}/images`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url, preview: idx==0 })
-        })
-        .then(r=>r.json())
-        .catch(console.error)
-      }))
-      .then(() => {
-        dispatch(receiveSpot(d))
-        window.location='/spots/'+d.id
-      })
-      .catch(() => {
-        alert('There was error uploading images, but the new Spot was successfully created.')
-      })
-    } else {
-      dispatch(receiveSpot(d))
-      window.location='/spots/'+d.id
-    }
-  })
-  .catch(console.error)
+	.then(r=>r.json())
+	.then(d => {
+		if(imgs) {
+		Promise.all(imgs.map((url,idx) => {
+			if(!url) return
+			csrfFetch(`/api/spots/${d.id}/images`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ url, preview: idx==0 })
+				})
+			.then(r=>r.json())
+			.catch(console.error)
+		}))
+		.then(() => {
+			dispatch(receiveSpot(d))
+			window.location='/spots/'+d.id
+		})
+		.catch(() => {
+			alert('There was error uploading images, but the new Spot was successfully created.')
+		})
+		} else {
+		dispatch(receiveSpot(d))
+		window.location='/spots/'+d.id
+		}
+	})
+	.catch(console.error)
 }
 /* export const callDeleteSpot = (id) => async (dispatch) => {
 	const response = await fetch('/api/spots/'+id, {method:'DELETE'});

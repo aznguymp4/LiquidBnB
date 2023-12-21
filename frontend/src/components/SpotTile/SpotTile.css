@@ -16,11 +16,12 @@
 .spotTileLoc {
     /* border: 1px solid purple; */
     height: 1.3em;
-    width: calc(100% - 2.5em);
+    width: calc(100% - 50px);
 }
 .spotTileRating {
     /* border: 1px solid purple; */
-    width: 2em;
+    width: 46px;
+    text-align: right;
     right: 0;
 }
 .spotTilePrice {

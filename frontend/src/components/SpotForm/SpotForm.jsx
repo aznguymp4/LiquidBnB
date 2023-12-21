@@ -9,7 +9,7 @@ function SpotForm() {
 	const [address, setAddress] = useState('')
 	const [city, setCity] = useState('')
 	const [state, setState] = useState('')
-	const [description, setDescriptionription] = useState('')
+	const [description, setDescription] = useState('')
 	const [name, setName] = useState('')
 	const [price, setPrice] = useState()
 	const [imgs, setImgs] = useState(new Array(5).fill(''))
@@ -104,7 +104,7 @@ function SpotForm() {
           type="text"
           placeholder="Please write at least 30 characters"
           value={description}
-          onChange={(e) => setDescriptionription(e.target.value)}
+          onChange={(e) => setDescription(e.target.value)}
           required
         />
         <span className='error'>{errs.description}</span>
