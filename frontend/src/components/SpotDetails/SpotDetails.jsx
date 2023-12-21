@@ -38,7 +38,7 @@ function SpotDetails() {
   }
   spot.avgRating = (parseInt(Math.round(spot.avgRating*10))/10).toString() // e.g. "3.3333333333 stars" will be changed to "3.3 stars"
   if(!spot.avgRating.includes('.')) spot.avgRating += '.0' // e.g. "5 stars" will be changed to "5.0 stars"
-  const s = spot.numReviews==1?'':'s'
+  const s = (spot?.numReviews || 0)==1?'':'s'
 
 	return (<>
 		<a id="spotName" className="wrap" onClick={()=>nav(-1)}>{spot.name}</a>
@@ -86,7 +86,7 @@ function SpotDetails() {
       <div id="spotReviewList">
         {(()=>{
           let highlightIdx
-          const arr = Object.values(reviews)?.map((review,idx) => {
+          const arr = Object.values(reviews).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt))?.map((review,idx) => {
             const userOwnsReview = review.userId==sessionUser?.id
             const highlighted = review.id==reviewHighlight || userOwnsReview
             if(highlighted) highlightIdx = idx

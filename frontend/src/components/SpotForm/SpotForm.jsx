@@ -111,7 +111,7 @@ function SpotForm() {
       </label>
       <hr/>
       <h3>
-        Create a name for your spot
+        Create a title for your spot
         <br/>
         <span>Catch guests&apos; attention with a spot name that highlights what makes your place special.</span>
       </h3>

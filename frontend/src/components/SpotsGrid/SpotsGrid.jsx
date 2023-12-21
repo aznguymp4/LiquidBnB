@@ -10,6 +10,7 @@ function SpotsGrid({ filterOwned }) {
 	const spots = useSelector(state => state.spots);
   const sessionUser = useSelector(state => state.session.user);
   const nav = useNavigate()
+  const spotsArr = Object.values(spots)
 	
 	useEffect(() => {
 		dispatch(callFetchSpots(filterOwned));
@@ -22,9 +23,9 @@ function SpotsGrid({ filterOwned }) {
       <h1>Manage Your Spots</h1>
       <div className="redBtn" id="manageSpotAddBtn" onClick={()=>nav('/spots/new')}>Create a New Spot</div>
     </>}
-    <div className="spotGrid">
+    {spotsArr.length? <div className="spotGrid">
       {
-        Object.values(spots).map(spot => {
+        spotsArr.map(spot => {
           return <SpotTile
             key={spot.id}
             spot={spot}
@@ -32,7 +33,7 @@ function SpotsGrid({ filterOwned }) {
           />
         })
       }
-    </div>
+    </div> : <h2 style={{textAlign:'center',opacity:.4}}><i>No Spots were found!<br/>Why not create one?</i></h2>}
   </>);
 }
 
