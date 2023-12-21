@@ -28,7 +28,7 @@ function SpotDetails() {
 
 	return (<>
     <br/>
-		<a id="spotName" href="/">{spot.name}</a>
+		<a id="spotName" className="wrap" href="/">{spot.name}</a>
 		<div id="spotLoc">{spot.city}, {spot.state}, {spot.country}</div>
 		<div id="spotImgGrid">
 			{spot.SpotImages?.map((i,idx) => {
@@ -40,7 +40,7 @@ function SpotDetails() {
         <div id="spotHost">
           Hosted by {spot.Owner?.firstName} {spot.Owner?.lastName}
         </div>
-        <div id="spotDesc">
+        <div id="spotDesc" className="wrap">
           {spot.description}
         </div>
       </div>

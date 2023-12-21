@@ -5,7 +5,10 @@
         content: "mobile view";
     }
     body {
-        padding: 0px 20px 0px !important;
+        padding: 5em 20px 0px !important;
+    }
+    #navBar { 
+        width: calc(100% - 40px) !important;
     }
 }
 
@@ -19,10 +22,20 @@
     --colRed: #FF5A5F;
     --colTeal: #00525E;
     --colTealLight: #E8F0FE;
+    --maxBodyWidth: 1000px;
+}
+
+.wrap {
+    word-wrap: break-word;
+}
+.truncate {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    /* border: 1px green solid; */
 }
 
 body {
-    padding: 0px 40px 0px;
+    padding: 5em 40px 0px;
     font-family: 'Rethink Sans', Arial, Helvetica, sans-serif;
 }
 

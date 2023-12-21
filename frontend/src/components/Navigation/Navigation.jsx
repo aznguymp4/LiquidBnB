@@ -8,13 +8,15 @@ function Navigation({ isLoaded }) {
 
   return (
     <div id="navBar">
-      <div className="navLeft">
+      <div id="navLeft">
         <NavLink exact to="/"><img id="navLogo" src="/logo-banner-small.png" alt="LiquidBnB Logo" title="Home Page"/></NavLink>
       </div>
       <div id="navSpace"></div>
-      <div className="navRight">
+      <div id="navRight">
+        {sessionUser && <NavLink id="navAddSpot" to="/spots/new">Create a New Spot</NavLink>}
         {isLoaded && <ProfileButton user={sessionUser}/>}
       </div>
+      <div id="navHr"/>
     </div>
   );
 }

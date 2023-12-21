@@ -1,0 +1,10 @@
+.error {
+    margin-left: .3em;
+    font-weight: 600;
+    font-size: small;
+    color: var(--colRed);
+}
+
+#spotForm {
+    width: 100%;
+}

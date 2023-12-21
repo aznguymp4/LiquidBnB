@@ -7,10 +7,12 @@ function SpotTile({ spot }) {
 
 	return (<Link to={`/spots/${spot.id}`} className="spotTile">
         <img className="spotTileImg" src={prvw} alt="" onError={e => {e.target.src = sampleImg}}/>
-		<div>{spot.city}, {spot.state}</div>
-		<div>{spot.name}</div>
-		<div><i className="fas fa-star"/> {spot.avgRating}</div>
-		<div><i>$</i><b>{spot.price}</b> night</div>
+		<div className="spotTilePropTop">
+			<div className="truncate spotTileProp spotTileLoc">{spot.city}, {spot.state}</div>
+			<div className="spotTileProp spotTileRating"><i className="fas fa-star"/> {spot.avgRating}</div>
+		</div>
+		{/* <div className="truncate spotTileProp spotTileName">{spot.name}</div> */}
+		<div className="spotTilePrice spotTileProp">$<b>{spot.price}</b> night</div>
 	</Link>);
 }
 

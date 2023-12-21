@@ -1,8 +1,41 @@
 #navBar {
     display: flex;
-    border-bottom: 1px solid var(--colGrayLight);
+    height: 61px;
+    width: calc(100% - 80px);
+    max-width: var(--maxBodyWidth);
+    position: fixed;
+    z-index: 1;
+    background-color: var(--colWhite);
+    top: 0px;
+    padding-top: 8px;
 }
+
+#navHr {
+    position: fixed;
+    width: 150vw;
+    height: 1px;
+    background-color: var(--colGrayLight);
+    top: 69px;
+    left: 0px;
+}
+
 /* #navBar > div {border:green 1px solid;} */
+#navAddSpot {
+    /* border: green 1px solid; */
+    margin: auto;
+    /* display: none; */
+}
+#navAddSpot:hover { /* link hover */
+    color: var(--colRed);
+    text-decoration: underline;
+}
+#navRight {
+    /* border: green 1px solid; */
+    display: inline-flex;
+    width: 30em;
+    height: min-content;
+    margin-left: auto;
+}
 
 #navSpace {
     width: 100%;
