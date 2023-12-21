@@ -36,3 +36,14 @@
     background-color: var(--colGrayLight);
     object-fit: cover;
 }
+
+.editBtns {
+    display: grid;
+    grid-template-columns: repeat(3, 3fr);
+    column-gap: .4em;
+    transform: translateY(2.75em);
+}
+.editBtns > div {
+    font-size: small;
+    padding: .3em 0;
+}

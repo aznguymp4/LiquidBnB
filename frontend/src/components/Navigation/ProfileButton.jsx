@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
+import { NavLink } from 'react-router-dom';
 import * as sessionActions from '../../store/session';
 import OpenModalButton from '../OpenModalButton';
 import LoginFormModal from '../LoginFormModal';
@@ -48,12 +49,14 @@ function ProfileButton({ user }) {
       <div className={ulClassName} ref={ulRef}>
         {user ? (
           <>
-            <div>{user.username}</div>
-            <div>{user.firstName} {user.lastName}</div>
-            <div>{user.email}</div>
-            <div>
-              <button onClick={logout}>Log Out</button>
+            <p>
+              <b className="truncateLongTxt">Hello, {user.username}</b>
+              <i className="truncateLongTxt">{user.email}</i>
+            </p>
+            <div id="manageSpotBtn">
+              <NavLink to="/spots/current">Manage Spots</NavLink>
             </div>
+            <div onClick={logout}>Log Out</div>
           </>
         ) : (
           <>
@@ -64,6 +67,7 @@ function ProfileButton({ user }) {
                 modalComponent={<SignupFormModal />}
               />
             </div>
+            <hr/>
             <div>
               <OpenModalButton
                 buttonText="Log In"

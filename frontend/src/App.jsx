@@ -38,6 +38,10 @@ const router = createBrowserRouter([
         element: <SpotDetails/>
       },
       {
+        path: '/spots/current',
+        element: <SpotsGrid filterOwned={true}/>
+      },
+      {
         path: '/spots/new',
         element: <SpotForm/>
       }

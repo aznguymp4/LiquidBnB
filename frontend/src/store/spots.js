@@ -1,5 +1,5 @@
 import { csrfFetch } from './csrf';
-export const [LOAD_SPOTS,RECEIVE_SPOT] = ['spots/LOAD_SPOTS','spots/RECEIVE_SPOT'];
+export const [LOAD_SPOTS,RECEIVE_SPOT,REMOVE_SPOT] = ['spots/LOAD_SPOTS','spots/RECEIVE_SPOT','spots/REMOVE_SPOT'];
 
 export const loadSpots = spots => ({
 	type: LOAD_SPOTS,
@@ -9,9 +9,13 @@ export const receiveSpot = spot => ({
 	type: RECEIVE_SPOT,
 	spot
 })
+export const removeSpot = spotId => ({
+	type: REMOVE_SPOT,
+	spotId
+})
 
-export const callFetchSpots = () => dispatch => {
-	fetch('/api/spots')
+export const callFetchSpots = (filterOwned) => dispatch => {
+	csrfFetch(`/api/spots${filterOwned?'/current':''}`)
 	.then(r=>r.json())
 	.then(d => dispatch(loadSpots(d.Spots)))
 	.catch(console.error)
@@ -65,6 +69,11 @@ export const callCreateSpot = (body, imgs) => dispatch => {
 	})
 	.catch(console.error)
 }
+export const callDeleteSpot = spotId => dispatch => {
+	csrfFetch('/api/spots/'+spotId, { method: 'DELETE' })
+	.then(() => dispatch(removeSpot(spotId)))
+	.catch(console.error)
+}
 /* export const callDeleteSpot = (id) => async (dispatch) => {
 	const response = await fetch('/api/spots/'+id, {method:'DELETE'});
 	if(!response.ok) return
@@ -106,6 +115,11 @@ const spotsReducer = (state = { spots: [] }, action) => {
 		}
 		case RECEIVE_SPOT:
 			return { ...state, [action.spot.id]: action.spot };
+		case REMOVE_SPOT: {
+			const newState = { ...state };
+			delete newState[action.spotId];
+			return newState;
+		}
 		default:
 			return state;
 	}

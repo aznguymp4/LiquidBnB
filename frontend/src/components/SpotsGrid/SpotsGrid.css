@@ -26,3 +26,10 @@
     row-gap: 5em;
     padding-bottom: 10em;
 }
+
+#manageSpotAddBtn {
+    width: max-content;
+    padding: .3em 1em;
+    margin: .3em 0 .5em;
+    font-size: small;
+}

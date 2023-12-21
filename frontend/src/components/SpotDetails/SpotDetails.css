@@ -21,6 +21,9 @@ body {
     font-weight: 800;
     font-size: xx-large;
 }
+#spotName:hover {
+    cursor: pointer;
+}
 #spotName:hover::before {
     content: "«";
     margin-right: .35em;
@@ -95,6 +98,9 @@ body {
     transition-property: box-shadow, transform, opacity;
     transition-duration: .175s;
     transition-timing-function: var(--easeOut);
+}
+.redBtn.alt {
+    background-color: var(--colGrayDarker);
 }
 .redBtn:hover {
     cursor: pointer;
