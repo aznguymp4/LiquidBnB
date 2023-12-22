@@ -188,7 +188,7 @@ const sampleSpots = [
     description: `Nestled in the heart of the Big Thicket, our Naturalist Boudoir B&B has everything you need to revitalize your senses.  Extremely private area for the naturalist with outdoor hot tub and shower.  We welcome all guests to experience our lovely Naturalist Boudoir & reconnect with your special someone. Should your dates not be available for this cabin, please check out our additional cabins...Naturalist Boudoir TOO, Naturalist Boudoir on Point & Naturalist Boudoir RITZ.  Check my profile for all.The spaceReady to unplug and get back to nature, come check out Naturalist Boudoir.Guest accessNaturalist Boudoir is an unusual space where one can get back to nature in a peaceful, private setting.Other things to noteAs you are actually in nature, you may encounter God's creatures of the woods.`,
     price: 309
   },
-  { /**************************** USER 3 ****************************/
+  { /**************************** USER 4 ****************************/
     ownerId: 4,
     address: "123 Example Address",
     city: "Roswell",
