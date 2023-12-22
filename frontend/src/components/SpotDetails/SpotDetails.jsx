@@ -23,7 +23,7 @@ function SpotDetails() {
   const userOwnsSpot = spot?.Owner?.id == sessionUser?.id
   const [searchParams] = useSearchParams();
   const reviewHighlight = searchParams.get('reviewJump')
-  const { setModalContent, setOnModalClose } = useModal();
+  const { setModalContent } = useModal();
 
 	useEffect(() => {
     dispatch(callFetchReviewsForSpot(spotId))

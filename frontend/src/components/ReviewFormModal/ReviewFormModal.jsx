@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { callCreateReview } from '../../store/reviews';
-import { useModal } from '../../context/Modal';
 import './ReviewForm.css';
 
 const starAmtEmoji = ['','🤬','😤','🫤','🙂','🤩✨']
@@ -10,7 +9,6 @@ function ReviewFormModal({ spotId }) {
 	const dispatch = useDispatch();
   const [rvwTxt, setRvwTxt] = useState('')
   const [stars, setStars] = useState(0)
-	const { closeModal } = useModal();
 
 	const handleSubmit = async (e) => {
     if(e.target.className.includes('Disabled')) return

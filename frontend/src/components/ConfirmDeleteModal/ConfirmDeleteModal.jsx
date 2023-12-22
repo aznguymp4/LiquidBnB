@@ -5,7 +5,7 @@ function ConfirmDeleteModal({ confirmed, text }) {
 	const { closeModal } = useModal();
 
 	return (
-		<div class="confirmDeleteModal">
+		<div className="confirmDeleteModal">
 			<h2>{text.title}</h2>
 			<div>{text.desc}</div>
 			<div className="redBtn btnDeleteModalYes" onClick={()=>{confirmed(); closeModal()}}>{text.btnYes}</div>
