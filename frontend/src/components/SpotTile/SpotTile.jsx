@@ -7,10 +7,9 @@ import { useDispatch } from 'react-redux';
 const sampleImg = ''//'https://i.imgur.com/WTy7Iwa.png'
 
 function SpotTile({ spot, editMode }) {
-  const dispatch = useDispatch()
-  const prvw = spot.previewImage==='No Preview Available'? sampleImg : spot.previewImage
+	const dispatch = useDispatch()
+	const prvw = spot.previewImage==='No Preview Available'? sampleImg : spot.previewImage
 	let ratingTxt = 0
-	// editMode = true
 
 	if(spot.avgRating) {
 		ratingTxt = (parseInt(Math.round(spot.avgRating*10))/10).toString() // e.g. "3.3333333333 stars" will be changed to "3.3 stars"
@@ -29,20 +28,20 @@ function SpotTile({ spot, editMode }) {
 		{editMode && <div className="editBtns">
 			<div className="redBtn alt">Update</div>
 			<OpenModalButton
-        className="redBtn"
-        buttonText="Delete"
-        modalComponent={<ConfirmDeleteModal
-          confirmed={() => {
-            dispatch(callDeleteSpot(spot.id))
-          }}
-          text={{
-            title: 'Confirm Delete',
-            desc: 'Are you sure you want to remove this spot?',
-            btnYes: 'Yes (Delete Spot)',
-            btnNo: 'No (Keep Spot)'
-          }}
-          />}
-      />
+				className="redBtn"
+				buttonText="Delete"
+				modalComponent={<ConfirmDeleteModal
+					confirmed={() => {
+						dispatch(callDeleteSpot(spot.id))
+					}}
+					text={{
+						title: 'Confirm Delete',
+						desc: 'Are you sure you want to remove this spot?',
+						btnYes: 'Yes (Delete Spot)',
+						btnNo: 'No (Keep Spot)'
+					}}
+					/>}
+			/>
 		</div>}
 	</div>);
 }

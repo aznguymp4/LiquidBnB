@@ -1,5 +1,5 @@
 import './SpotDetails.css';
-import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { callFetch1Spot } from '../../store/spots';
@@ -14,7 +14,6 @@ const starEmpty = <i className="far fa-star starEmpty"/>
 function SpotDetails() {
   const { spotId } = useParams();
 	const dispatch = useDispatch();
-  const nav = useNavigate()
 	const spot = useSelector(state => state.spots[spotId]);
   const reviews = useSelector(state => state.reviews);
   const sessionUser = useSelector(state => state.session.user);
@@ -41,7 +40,7 @@ function SpotDetails() {
   const s = (spot?.numReviews || 0)==1?'':'s'
 
 	return (<>
-		<a id="spotName" className="wrap" onClick={()=>nav(-1)}>{spot.name}</a>
+		<a id="spotName" className="wrap" href='/'>{spot.name}</a>
 		<div id="spotLoc">{spot.city}, {spot.state}, {spot.country}</div>
 		<div id="spotImgGrid">
 			{spot.SpotImages?.map((i,idx) => {
