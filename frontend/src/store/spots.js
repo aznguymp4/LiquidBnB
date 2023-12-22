@@ -1,5 +1,5 @@
 import { csrfFetch } from './csrf';
-export const [LOAD_SPOTS,RECEIVE_SPOT,REMOVE_SPOT] = ['spots/LOAD_SPOTS','spots/RECEIVE_SPOT','spots/REMOVE_SPOT'];
+export const [LOAD_SPOTS,RECEIVE_SPOT,REMOVE_SPOT,UPDATE_SPOT] = ['spots/LOAD_SPOTS','spots/RECEIVE_SPOT','spots/REMOVE_SPOT','spots/UPDATE_SPOT'];
 
 export const loadSpots = spots => ({
 	type: LOAD_SPOTS,
@@ -13,6 +13,10 @@ export const removeSpot = spotId => ({
 	type: REMOVE_SPOT,
 	spotId
 })
+export const editSpot = spot => ({
+	type: UPDATE_SPOT,
+	spot
+});
 
 export const callFetchSpots = (filterOwned) => dispatch => {
 	csrfFetch(`/api/spots${filterOwned?'/current':''}`)
@@ -40,7 +44,7 @@ export const callCreateSpot = (body, imgs) => dispatch => {
 	csrfFetch('/api/spots', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({...body, lat:10, lng:10}),
+		body: JSON.stringify({...body, lat:-10, lng:10}),
 	})
 	.then(r=>r.json())
 	.then(d => {
@@ -63,9 +67,21 @@ export const callCreateSpot = (body, imgs) => dispatch => {
 			alert('There was error uploading images, but the new Spot was successfully created.')
 		})
 		} else {
-		dispatch(receiveSpot(d))
-		window.location='/spots/'+d.id
+			dispatch(receiveSpot(d))
+			window.location='/spots/'+d.id
 		}
+	})
+	.catch(console.error)
+}
+export const callEditSpot = (spotId, payload) => dispatch => {
+	csrfFetch('/api/spots/'+spotId, {
+		method: 'PUT',
+		body: JSON.stringify({ ...payload, lat:-10, lng:10})
+	})
+	.then(r=>r.json())
+	.then(d => {
+		dispatch(editSpot(d))
+		window.location='/spots/'+d.id
 	})
 	.catch(console.error)
 }
@@ -114,6 +130,8 @@ const spotsReducer = (state = { spots: [] }, action) => {
 			return spotsState;
 		}
 		case RECEIVE_SPOT:
+			return { ...state, [action.spot.id]: action.spot };
+		case UPDATE_SPOT:
 			return { ...state, [action.spot.id]: action.spot };
 		case REMOVE_SPOT: {
 			const newState = { ...state };

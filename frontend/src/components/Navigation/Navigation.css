@@ -31,8 +31,12 @@
 #navAddSpot {
     margin: auto 0 auto auto;
 }
-#spotAddDesktop:hover { /* link hover */
+#spotAddDesktop {
+    font-weight: 600;
+}
+#spotAddDesktop:hover, #btnDemoUser:hover { /* link hover */
     color: var(--colRed);
+    cursor: pointer;
     text-decoration: underline;
 }
 #spotAddMobile {

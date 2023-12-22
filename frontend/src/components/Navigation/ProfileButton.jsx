@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import * as sessionActions from '../../store/session';
 import OpenModalButton from '../OpenModalButton';
@@ -8,6 +9,7 @@ import SignupFormModal from '../SignupFormModal';
 import './ProfileButton.css'
 
 function ProfileButton({ user }) {
+  const nav = useNavigate()
   const dispatch = useDispatch();
   const [showMenu, setShowMenu] = useState(false);
   const ulRef = useRef();
@@ -37,6 +39,7 @@ function ProfileButton({ user }) {
     e.preventDefault();
     dispatch(sessionActions.logout());
     closeMenu();
+    nav('/')
   };
 
   const ulClassName = "profile-dropdown" + (showMenu ? "" : " hidden");
@@ -54,7 +57,7 @@ function ProfileButton({ user }) {
               <i className="truncateLongTxt">{user.email}</i>
             </p>
             <div id="manageSpotBtn">
-              <NavLink to="/spots/current">Manage Spots</NavLink>
+              <NavLink to="/spots/current" onClick={closeMenu}>Manage Spots</NavLink>
             </div>
             <div onClick={logout}>Log Out</div>
           </>

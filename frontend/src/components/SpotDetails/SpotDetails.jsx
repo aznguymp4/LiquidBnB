@@ -1,18 +1,21 @@
 import './SpotDetails.css';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { callFetch1Spot } from '../../store/spots';
+import { callFetch1Spot, callDeleteSpot } from '../../store/spots';
 import { callFetchReviewsForSpot, callDeleteReview } from '../../store/reviews';
 import OpenModalButton from '../OpenModalButton';
 import ReviewFormModal from '../ReviewFormModal'
 import ConfirmDeleteModal from '../ConfirmDeleteModal'
+import { useModal } from '../../context/Modal';
 
 const starSolid = <i className="fas fa-star starSolid"/>
 const starEmpty = <i className="far fa-star starEmpty"/>
+const placeholder = 'https://www.colorhexa.com/dddddd.png'
 
 function SpotDetails() {
   const { spotId } = useParams();
+  const nav = useNavigate()
 	const dispatch = useDispatch();
 	const spot = useSelector(state => state.spots[spotId]);
   const reviews = useSelector(state => state.reviews);
@@ -20,6 +23,7 @@ function SpotDetails() {
   const userOwnsSpot = spot?.Owner?.id == sessionUser?.id
   const [searchParams] = useSearchParams();
   const reviewHighlight = searchParams.get('reviewJump')
+  const { setModalContent, setOnModalClose } = useModal();
 
 	useEffect(() => {
     dispatch(callFetchReviewsForSpot(spotId))
@@ -32,7 +36,7 @@ function SpotDetails() {
   if(!spot) return null
   if(spot?.SpotImages?.length < 5) { // placeholder gray tiles for no emptiness!
     for(let i=0;i<=5-spot.SpotImages.length;i++) {
-      spot.SpotImages.push({ id: 0, url: 'https://www.colorhexa.com/dddddd.png', preview: false, placeholder: true })
+      spot.SpotImages.push({ id: 0, url: placeholder, preview: false, placeholder: true })
     }
   }
   spot.avgRating = (parseInt(Math.round(spot.avgRating*10))/10).toString() // e.g. "3.3333333333 stars" will be changed to "3.3 stars"
@@ -40,11 +44,39 @@ function SpotDetails() {
   const s = (spot?.numReviews || 0)==1?'':'s'
 
 	return (<>
-		<a id="spotName" className="wrap" href='/'>{spot.name}</a>
+    <div id="spotDetailHeader">
+      <a id="spotName" className="wrap" href='/'>{spot.name}</a>
+      {userOwnsSpot && <div id="spotDetailControl">
+        <div className="redBtn" onClick={()=>nav(`/spots/${spotId}/edit`)}><i className="fas fa-edit"/> Update</div>
+        {/* <div className="redBtn"><i className="fas fa-trash-alt"/> Delete</div> */}
+        <OpenModalButton
+          className="redBtn"
+          buttonText={<><i className="fas fa-trash-alt"/> Delete</>}
+          modalComponent={
+            <ConfirmDeleteModal
+              confirmed={() => {
+                dispatch(callDeleteSpot(spotId))
+                nav('/spots/current')
+              }}
+              text={{
+                title: 'Confirm Delete',
+                desc: 'Are you sure you want to remove this spot?',
+                btnYes: 'Yes (Delete Spot)',
+                btnNo: 'No (Keep Spot)'
+              }}
+            />
+          }
+        />
+      </div>}
+    </div>
+    
 		<div id="spotLoc">{spot.city}, {spot.state}, {spot.country}</div>
 		<div id="spotImgGrid">
 			{spot.SpotImages?.map((i,idx) => {
-				return <img key={idx} src={i.url}/>
+				return <img key={idx} src={i.url} onClick={()=>{
+          if(i.url == placeholder) return
+          setModalContent(<img className="expandedImg" src={i.url}/>)
+        }}/>
 			})}
 		</div>
     <div id="spotInfo">

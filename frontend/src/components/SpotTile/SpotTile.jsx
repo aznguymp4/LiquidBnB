@@ -1,5 +1,5 @@
 import './SpotTile.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import OpenModalButton from '../OpenModalButton';
 import ConfirmDeleteModal from '../ConfirmDeleteModal';
 import { callDeleteSpot } from '../../store/spots';
@@ -8,6 +8,7 @@ const sampleImg = ''//'https://i.imgur.com/WTy7Iwa.png'
 
 function SpotTile({ spot, editMode }) {
 	const dispatch = useDispatch()
+	const nav = useNavigate()
 	const prvw = spot.previewImage==='No Preview Available'? sampleImg : spot.previewImage
 	let ratingTxt = 0
 
@@ -26,21 +27,23 @@ function SpotTile({ spot, editMode }) {
 			<div className="spotTilePrice spotTileProp">$<b>{spot.price}</b> night</div>
 		</Link>
 		{editMode && <div className="editBtns">
-			<div className="redBtn alt">Update</div>
+			<div className="redBtn alt" onClick={()=>nav(`/spots/${spot.id}/edit`)}>Update</div>
 			<OpenModalButton
-				className="redBtn"
+				className="redBtn alt"
 				buttonText="Delete"
-				modalComponent={<ConfirmDeleteModal
-					confirmed={() => {
-						dispatch(callDeleteSpot(spot.id))
-					}}
-					text={{
-						title: 'Confirm Delete',
-						desc: 'Are you sure you want to remove this spot?',
-						btnYes: 'Yes (Delete Spot)',
-						btnNo: 'No (Keep Spot)'
-					}}
-					/>}
+				modalComponent={
+					<ConfirmDeleteModal
+						confirmed={() => {
+							dispatch(callDeleteSpot(spot.id))
+						}}
+						text={{
+							title: 'Confirm Delete',
+							desc: 'Are you sure you want to remove this spot?',
+							btnYes: 'Yes (Delete Spot)',
+							btnNo: 'No (Keep Spot)'
+						}}
+					/>
+				}
 			/>
 		</div>}
 	</div>);

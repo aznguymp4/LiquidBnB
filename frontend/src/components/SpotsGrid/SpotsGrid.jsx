@@ -12,11 +12,13 @@ function SpotsGrid({ filterOwned }) {
   const nav = useNavigate()
   const spotsArr = Object.values(spots)
 	
+  useEffect(() => {
+    if(filterOwned && !sessionUser) return nav('/unauthorized')
+  }, [filterOwned, sessionUser, nav])
+
 	useEffect(() => {
-		dispatch(callFetchSpots(filterOwned));
+		dispatch(callFetchSpots(sessionUser? filterOwned : undefined));
 	}, [dispatch, filterOwned, sessionUser]);
-	
-  if(filterOwned && !sessionUser) return <h1 style={{textAlign:'center'}}>You must be logged in to view this!</h1>
 
 	return (<>
     {filterOwned && <>

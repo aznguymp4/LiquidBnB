@@ -1,23 +1,54 @@
 import './SpotForm.css';
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { callCreateSpot } from '../../store/spots'
+import { useSelector } from 'react-redux';
+import { callCreateSpot, callEditSpot } from '../../store/spots'
 import { useDispatch } from 'react-redux'
+import { callFetch1Spot } from '../../store/spots';
+import { useParams } from 'react-router-dom';
 const imageURLregex = /(https?:\/\/.*\.(?:png|jpg|jpeg))/
 
-function SpotForm() {
+function SpotForm({ edit }) {
+	const dispatch = useDispatch();
+	const nav = useNavigate()
+
+	const { spotId } = useParams()
+	const spot = useSelector(state => state.spots[spotId])
+	const sessionUser = useSelector(state => state.session.user);
+
+	useEffect(()=>{
+		if(!sessionUser || (edit && spot && sessionUser.id != spot.ownerId)) return nav('/unauthorized')
+		
+	},[edit, sessionUser, spot, nav])
+
 	const [country, setCountry] = useState('')
 	const [address, setAddress] = useState('')
 	const [city, setCity] = useState('')
 	const [state, setState] = useState('')
 	const [description, setDescription] = useState('')
 	const [name, setName] = useState('')
-	const [price, setPrice] = useState()
+	const [price, setPrice] = useState('')
 	const [imgs, setImgs] = useState(new Array(5).fill(''))
 	const [errs, setErrs] = useState({})
 	const [submitAttempted, setSA] = useState(false)
 	const [submitting, setSubmitting] = useState(false)
-	const dispatch = useDispatch();
-	
+
+	useEffect(()=>{
+		dispatch(callFetch1Spot(spotId));
+	}, [dispatch, spotId])
+
+	useEffect(()=>{
+		if(!edit || !spot) return
+		setCountry(spot.country)
+		setAddress(spot.address)
+		setCity(spot.city)
+		setState(spot.state)
+		setDescription(spot.description)
+		setName(spot.name)
+		setPrice(spot.price)
+		// setImgs(spot.SpotImages?.map(a=>a.url) || new Array(5).fill(''))
+	},[edit,spot])
+
 	useEffect(()=>{
 		if(!submitAttempted) return
 		const m = {imgs:[]}
@@ -27,6 +58,7 @@ function SpotForm() {
 		if(!state) m.state = 'State is required'
 		if(description.length < 30) m.description = 'Description needs a minimum of 30 characters'
 		if(!name) m.name = 'Name is required'
+		if(name.length > 50) m.name = 'Name must be less than 50 characters'
 		if(!price) m.price = 'Price is required'
 		if(!imgs.filter(Boolean).length) m.imgs[0] = 'Preview image is required (image URL)'
 		imgs.map((img,idx) => {
@@ -34,22 +66,22 @@ function SpotForm() {
 			if(!imageURLregex.test(img)) m.imgs[idx] = 'Must be a valid image URL'
 			else if(!/\.(png|jpg|jpeg)$/.test(img)) m.imgs[idx] = 'Image URL must end in .png, .jpg, or .jpeg'
 		})
-		if(!m.imgs.length) delete m.imgs
+		if(!m.imgs.length || edit) delete m.imgs
 		setErrs(m)
 		if(submitting) onSubmit(m)
-	}, [country, address, city, state, description, name, price, imgs, submitAttempted, submitting])
+	}, [country, address, city, state, description, name, price, imgs, submitAttempted, submitting, edit])
 
 	const onSubmit = (m) => {
 		setSubmitting(false)
 		if(Object.values(m).length) return alert(`The following errors were found:\n\n${Object.values(m).map(e=>`    * ${e}`).join('\n')}`)
 
 		const body = {address, city, state, country, name, description, price: +price}
-		dispatch(callCreateSpot(body, imgs))
+		dispatch(edit && spotId ? callEditSpot(spotId, body) : callCreateSpot(body, imgs))
 	}
 
 	return (<>
 		<form id="spotForm">
-			<h1>Create a new Spot</h1>
+			<h1>{edit? 'Update your' : 'Create a New'} Spot</h1>
 			<div className="formSectionTitle">
 				Where&apos;s your place located?
 				<br/>
@@ -153,40 +185,42 @@ function SpotForm() {
 				required
 			/>
 			<span className='error'>{errs.price}</span>
-			<div className="hr"/>
-			<div className="formSectionTitle">
-				Liven up your spot with photos
-				<br/>
-				<span>Submit a link to at least one photo to publish your spot.</span>
-			</div>
-			<div id="formImgFields">
-				{(()=>{
-					const a = []
-					for (let i=0;i<5;i++) {
-						a.push(<>
-							<input
-								name={`imgUrl${i}`}
-								type="text"
-								placeholder={`${i?'':'Preview '}Image URL`}
-								value={imgs[i]}
-								onChange={(e) => {
-									const a = [...imgs]
-									a[i] = e.target.value
-									setImgs(a)
-								}}
-								required={i==0}
-							/>
-							<label htmlFor={`imgUrl${i}`}>
-								<span className='error'>{errs.imgs && errs.imgs[i]? errs.imgs[i] : ''}</span>
-							</label>
-						</>)
-					}
-					return a
-				})()}
-			</div>
+			{!edit && <>
+				<div className="hr"/>
+				<div className="formSectionTitle">
+					Liven up your spot with photos
+					<br/>
+					<span>Submit a link to at least one photo to publish your spot.</span>
+				</div>
+				<div id="formImgFields">
+					{(()=>{
+						const a = []
+						for (let i=0;i<5;i++) {
+							a.push(<>
+								<input
+									name={`imgUrl${i}`}
+									type="text"
+									placeholder={`${i?'':'Preview '}Image URL`}
+									value={imgs[i]}
+									onChange={(e) => {
+										const a = [...imgs]
+										a[i] = e.target.value
+										setImgs(a)
+									}}
+									required={i==0}
+								/>
+								<label htmlFor={`imgUrl${i}`}>
+									<span className='error'>{errs.imgs && errs.imgs[i]? errs.imgs[i] : ''}</span>
+								</label>
+							</>)
+						}
+						return a
+					})()}
+				</div>
+			</>}
 			<div className="hr"/>
 			<div className="redBtn" id="spotFormCreate" onClick={()=>{setSubmitting(true); setSA(true)}}>
-				Create Spot
+				{edit? 'Update':'Create'} Spot
 			</div>
 		</form>
 	</>);

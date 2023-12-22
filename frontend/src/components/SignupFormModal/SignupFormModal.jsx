@@ -16,6 +16,7 @@ function SignupFormModal() {
   const { closeModal } = useModal();
 
   const handleSubmit = (e) => {
+    if(e.target.className.includes('Disabled')) return;
     e.preventDefault();
     if (password === confirmPassword) {
       setErrors({});
@@ -43,71 +44,71 @@ function SignupFormModal() {
 
   return (
     <>
-      <h1>Sign Up</h1>
-      <form onSubmit={handleSubmit}>
+      <form className="credentialForm">
+        <h1>Sign Up</h1>
         <label>
-          Email
-          <input
-            type="text"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          Email {errors.email && <div className="error">{errors.email}</div>}
         </label>
-        {errors.email && <p>{errors.email}</p>}
+        <input
+          type="text"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
         <label>
-          Username
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
+          Username {errors.username && <div className="error">{errors.username}</div>}
         </label>
-        {errors.username && <p>{errors.username}</p>}
+        <input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
         <label>
-          First Name
-          <input
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
+          First Name {errors.firstName && <div className="error">{errors.firstName}</div>}
         </label>
-        {errors.firstName && <p>{errors.firstName}</p>}
+        <input
+          type="text"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          required
+        />
         <label>
-          Last Name
-          <input
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-          />
+          Last Name {errors.lastName && <div className="error">{errors.lastName}</div>}
         </label>
-        {errors.lastName && <p>{errors.lastName}</p>}
+        <input
+          type="text"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          required
+        />
         <label>
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          Password {errors.password && <div className="error">{errors.password}</div>}
         </label>
-        {errors.password && <p>{errors.password}</p>}
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
         <label>
-          Confirm Password
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
+          Confirm Password {errors.confirmPassword && <div className="error">{errors.confirmPassword}</div>}
         </label>
-        {errors.confirmPassword && (
-          <p>{errors.confirmPassword}</p>
-        )}
-        <button type="submit">Sign Up</button>
+        <input
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+        />
+        <div
+          className={`credentialSubmitBtn redBtn${
+            [email,username,firstName,lastName,password,confirmPassword].some(a=>!a)
+            || username.length < 4
+            || password.length < 6
+            || confirmPassword.length < 6
+            ?'Disabled':''}`}
+          id="btnSignup"
+          onClick={handleSubmit}>Sign Up</div>
       </form>
     </>
   );

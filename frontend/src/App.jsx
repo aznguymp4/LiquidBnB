@@ -5,6 +5,7 @@ import Navigation from './components/Navigation';
 import SpotsGrid from './components/SpotsGrid';
 import SpotDetails from './components/SpotDetails';
 import SpotForm from './components/SpotForm';
+import Unauthorized from './components/Unauthorized';
 import * as sessionActions from './store/session';
 
 function Layout() {
@@ -38,12 +39,20 @@ const router = createBrowserRouter([
         element: <SpotDetails/>
       },
       {
+        path: '/spots/:spotId/edit',
+        element: <SpotForm edit={true}/>
+      },
+      {
         path: '/spots/current',
         element: <SpotsGrid filterOwned={true}/>
       },
       {
         path: '/spots/new',
         element: <SpotForm/>
+      },
+      {
+        path: '/unauthorized',
+        element: <Unauthorized/>
       }
     ]
   }
