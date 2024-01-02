@@ -1,5 +1,5 @@
 import './SpotDetails.css';
-import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate, NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { callFetch1Spot, callDeleteSpot } from '../../store/spots';
@@ -33,7 +33,12 @@ function SpotDetails() {
     dispatch(callFetch1Spot(spotId));
   }, [dispatch, reviews, spotId])
 
-  if(!spot) return null
+  if(!spot) return <h2 id="unauthorized">
+    Spot was not found! :(
+    <br/>
+    <br/>
+    <div className="redBtn" id="unauthorizedGoHome" onClick={()=>nav('/')}>Go Home</div>
+  </h2>;
   if(spot?.SpotImages?.length < 5) { // placeholder gray tiles for no emptiness!
     for(let i=0;i<=5-spot.SpotImages.length;i++) {
       spot.SpotImages.push({ id: 0, url: placeholder, preview: false, placeholder: true })
@@ -45,7 +50,7 @@ function SpotDetails() {
 
 	return (<>
     <div id="spotDetailHeader">
-      <a id="spotName" className="wrap" href='/'>{spot.name}</a>
+      <NavLink id="spotName" className="wrap" to='/'>{spot.name}</NavLink>
       {userOwnsSpot && <div id="spotDetailControl">
         <div className="redBtn" onClick={()=>nav(`/spots/${spotId}/edit`)}><i className="fas fa-edit"/> Update</div>
         {/* <div className="redBtn"><i className="fas fa-trash-alt"/> Delete</div> */}
