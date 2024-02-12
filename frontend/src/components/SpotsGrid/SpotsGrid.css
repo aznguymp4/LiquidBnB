@@ -1,0 +1,35 @@
+@media screen and (max-width: 1024px) {
+    .spotGrid {
+        grid-template-columns: repeat(3, 3fr) !important;
+    }
+}
+@media screen and (max-width: 720px) {
+    .spotGrid {
+        grid-template-columns: repeat(2, 2fr) !important;
+    }
+}
+@media screen and (max-width: 600px) {
+    .spotGrid {
+        grid-template-columns: repeat(1, 1fr) !important;
+    }
+    .spotTileImg {
+        width: calc(100vw - 40px) !important;
+        height: calc(70vw - 60px) !important;
+    }
+}
+
+.spotGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 4fr);
+    padding-top: 1em;
+    column-gap: 1em;
+    row-gap: 5em;
+    padding-bottom: 10em;
+}
+
+#manageSpotAddBtn {
+    width: max-content;
+    padding: .3em 1em;
+    margin: .3em 0 .5em;
+    font-size: small;
+}

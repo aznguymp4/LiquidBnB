@@ -1,0 +1,12 @@
+.confirmDeleteModal {
+    text-align: center;
+}
+
+.btnDeleteModalYes, .btnDeleteModalNo {
+    padding: .7em;
+    margin: .7em 0;
+}
+
+.btnDeleteModalNo {
+    margin-bottom: 1em;
+}
