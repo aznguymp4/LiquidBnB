@@ -1,0 +1,49 @@
+.spotTile {
+    height: min-content;
+    width: 100%;
+    position: relative;
+}
+
+.spotTileProp {
+    position: absolute;
+    width: 100%;
+    font-size: small;
+}
+
+.spotTilePropTop {
+    display: flex;
+}
+.spotTileLoc {
+    /* border: 1px solid purple; */
+    height: 1.3em;
+    width: calc(100% - 50px);
+}
+.spotTileRating {
+    /* border: 1px solid purple; */
+    width: 46px;
+    text-align: right;
+    right: 0;
+}
+.spotTilePrice {
+    margin-top: 1.5em;
+}
+
+.spotTileImg {
+    border-radius: 1em;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1/1;
+    background-color: var(--colGrayLight);
+    object-fit: cover;
+}
+
+.editBtns {
+    display: grid;
+    grid-template-columns: repeat(3, 3fr);
+    column-gap: .4em;
+    transform: translateY(2.75em);
+}
+.editBtns > div {
+    font-size: small;
+    padding: .3em 0;
+}

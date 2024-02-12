@@ -1,0 +1,10 @@
+#unauthorized {
+    text-align: center;
+}
+#unauthorizedGoHome {
+    padding: 10px 16px;
+    width: max-content;
+    font-weight: 800;
+    font-size: large;
+    margin: auto;
+}
