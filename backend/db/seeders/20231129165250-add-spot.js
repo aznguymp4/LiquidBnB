@@ -154,15 +154,15 @@ const sampleSpots = [
   },
   {
     ownerId: 3,
-    address: "123 Example Address",
-    city: "Austin",
+    address: "3000 Grapevine Mills Pkwy",
+    city: "Grapevine",
     state: "Texas",
-    country: "United States",
+    country: "USA",
     lat: (Math.random()*100)-50,
     lng: (Math.random()*100)-50,
-    name: "The Bloomhouse | One-of-a-kind-of-unbelievable",
-    description: `West Austin | Fairy Tale Escape | 1100 Sq. Ft. | Sleeps 4Ever stay in a giant seashell unicorn? No, you haven’t, but now you can cross it off your bucket list. This magical work of art is part Willy Wonka, part Big Lebowski, and totally unlike anywhere else. Do it for the ‘gram, but also for your soul.The spaceCome take a vacation from the real world of right angles and ticky tacky boxes. Situated on a secluded lot and wonderfully restored, The Bloomhouse is a celebration of all things magical and mystical.How the heck did this magnificent beast come to be? Like all the best things in Austin, it started with some hippies and a dream. See, back in the 70s, while Wooderson was wasting all his time away, two UT architecture students decided to build an escape from society that would become a monument to man and nature. Their goal was a home that would not only protect you from the elements but allow you to live in harmony with the environment. They wanted this quixotic vision to provide a place of peace and isolation, a place so far removed that for many years there was no physical address. Then the hippie dream disappeared into the 1980’s Austin real estate boom, and there in the hills, the Bloomhouse waited. It woul`,
-    price: 527
+    name: "Round1 at Grapevine Mills Mall",
+    description: "Round1 Bowling & Amusement is a multi-entertainment facility offering Bowling, Arcade Games, Billiards, Karaoke, Ping Pong, Darts, and another entertainment-like activities in an indoor facility complex. With its variety of fun filled activities, exclusive arcade machines from Japan, and food & beverage offerings, Round1 is unparalleled by its competitors. We also have tons of exclusive rhythm games!",
+    price: 100
   },
   {
     ownerId: 3,
@@ -274,15 +274,15 @@ const sampleSpots = [
   },
   {
     ownerId: 5,
-    address: "3000 Grapevine Mills Pkwy",
-    city: "Grapevine",
-    state: "Texas",
+    address: "123 Example Address",
+    city: "Jacksonville",
+    state: "Florida",
     country: "USA",
     lat: (Math.random()*100)-50,
     lng: (Math.random()*100)-50,
-    name: "Round1 at Grapevine Mills Mall",
-    description: "Round1 Bowling & Amusement is a multi-entertainment facility offering Bowling, Arcade Games, Billiards, Karaoke, Ping Pong, Darts, and another entertainment-like activities in an indoor facility complex. With its variety of fun filled activities, exclusive arcade machines from Japan, and food & beverage offerings, Round1 is unparalleled by its competitors. We also have tons of exclusive rhythm games!",
-    price: 100
+    name: "Elegant/ Spacious 1 BD unit 1 block to the beach",
+    description: "Everyone will enjoy this beautiful, newly renovated unit. A+ location: walking distance to shops and restaurants. Your group will love being a block and a half from the sand. Ideal for a couple and kid/s but could work for 2 couples as well.. The space. One private bedroom with door, big spacious living area with tv, bathroom with shower and kitchen. Out front has a fire pit and grill.. Guest access. Park out front on white rocks, access the unit through the front door.. Other things to note. Short walk to the beach, close to restaurants and shops, great location to be by the pier in a few minutes.",
+    price: 226
   },
   {
     ownerId: 5,
